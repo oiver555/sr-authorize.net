@@ -38,7 +38,7 @@ app.post('/charge/card', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    logger.info('Hello from the Server!')
+    console.info('Hello from the Server!')
 
     res.status(200).json({
         status: 'success',
