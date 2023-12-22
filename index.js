@@ -1,12 +1,9 @@
 'use strict';
-const { APIControllers, APIContracts: ApiContracts } = require('authorizenet');
 const express = require('express')
 const { chargeCreditCard, validateForm } = require('./utility')
 const app = express()
  
 const cors = require('cors');
-
-
 
 app.post('/charge/card', (req, res) => {
     const validationErrors = validateForm(req.query);
@@ -40,6 +37,15 @@ app.post('/charge/card', (req, res) => {
     }
 });
 
+app.get('/', (req, res) => {
+    logger.info('Hello from the Server!')
+
+    res.status(200).json({
+        status: 'success',
+        requestedAt: req.requestTime,
+        data: {}
+    })
+})
 
 // Enable CORS for all routes
 app.use(cors());

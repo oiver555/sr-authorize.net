@@ -152,9 +152,6 @@ function chargeCreditCard(data, callback) {
     });
 }
 
-
-
-
 const validateForm = (req) => {
     const { cardNumber, cardCode, expiration, tithe1, tithe2, offering, bldg, email  } = req;
 
