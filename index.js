@@ -4,6 +4,7 @@ const { chargeCreditCard, validateForm } = require('./utility')
 const app = express()
  
 const cors = require('cors');
+app.use(cors());
 
 app.post('/charge/card', (req, res) => {
     const validationErrors = validateForm(req.query);
@@ -48,7 +49,7 @@ app.get('/', (req, res) => {
 })
 
 // Enable CORS for all routes
-app.use(cors());
+
 
 
 const port = process.env.PORT || 3000;
