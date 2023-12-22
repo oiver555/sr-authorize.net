@@ -3,7 +3,8 @@ const { APIControllers, APIContracts: ApiContracts } = require('authorizenet');
 const express = require('express')
 const { chargeCreditCard, validateForm } = require('./utility')
 const app = express()
-const port = process.env.PORT || 3000;
+ 
+const cors = require('cors');
 
 
 
@@ -16,15 +17,14 @@ app.post('/charge/card', (req, res) => {
         return;
     } else {
         console.log("Validation Complete, Processing Card Now!")
-        const { cardNumber,firstName,lastName,address, cardCode, expiration, tithe1, tithe2, offering, bldg, email, invoiceNumber, city , state, zip, country } = req.query;
+        const { cardNumber,firstName,lastName,address, cardCode, expiration, tithe1, tithe2, offering, bldg, email,  city , state, zip, country } = req.query;
         chargeCreditCard({
         firstName,
         lastName,
         address,
         cardNumber,
         expiration,
-        cardCode,
-        invoiceNumber,
+        cardCode,  
         city,
         state,
         zip,
@@ -41,13 +41,14 @@ app.post('/charge/card', (req, res) => {
 });
 
 
+// Enable CORS for all routes
+app.use(cors());
 
 
+const port = process.env.PORT || 3000;
 
-app.listen(port);
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
 
 
-
-if (require.main === module) {
-
-}
