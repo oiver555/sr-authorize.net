@@ -7,6 +7,7 @@ const cors = require('cors');
 app.use(cors());
 
 app.post('/charge/card', (req, res) => {
+    console.log(req.query)
     const validationErrors = validateForm(req.query);
 
     if (validationErrors.length > 0) {
