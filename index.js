@@ -10,7 +10,7 @@ app.use(cors());
 app.use(bodyParser.json())
 
 app.post('/charge/card', (req, res) => {
-    console.log(req.body)
+    // console.log(req.body)
 
     const validationErrors = validateForm(req.body);
 
@@ -20,12 +20,13 @@ app.post('/charge/card', (req, res) => {
         return;
     } else {
         console.log("Validation Complete, Processing Card Now!")
-        chargeCreditCard(req.body, function () {
+        chargeCreditCard(req.body, function (result) {
+            console.log(result)
             res.status(200).json({
                 status: 'success',
                 type: "Card",
                 requestedAt: req.requestTime,
-                data: 'Card Transaction Complete.'
+                data: result
             })
 
         });

@@ -1,8 +1,8 @@
 'use strict';
 const { APIControllers, APIContracts: ApiContracts, } = require('authorizenet');
 const validator = require('validator');
-const apiID = "88DUc2uz";
-const transactionKey = "6gt59FauQ6S3g4E8";
+const apiID = process.env.apiID;
+const transactionKey = process.env.transactionKey;
 const random = require('random-key-generator')
 
 function chargeCreditCard(data, callback) {
@@ -20,7 +20,7 @@ function chargeCreditCard(data, callback) {
     paymentType.setCreditCard(creditCard);
 
     var orderDetails = new ApiContracts.OrderType();
-    orderDetails.setInvoiceNumber(`INV-${random(5)}`);
+    orderDetails.setInvoiceNumber(`${data.source}-${data.invoiceNumber}`);
     orderDetails.setDescription('Tithe & Offering');
 
     var billTo = new ApiContracts.CustomerAddressType();
@@ -116,16 +116,16 @@ function chargeCreditCard(data, callback) {
         if (response != null) {
             if (response.getMessages().getResultCode() == ApiContracts.MessageTypeEnum.OK) {
                 if (response.getTransactionResponse().getMessages() != null) {
-                    console.log('Successfully created transaction with Transaction ID: ' + response.getTransactionResponse().getTransId());
-                    console.log('Response Code: ' + response.getTransactionResponse().getResponseCode());
-                    console.log('Message Code: ' + response.getTransactionResponse().getMessages().getMessage()[0].getCode());
-                    console.log('Description: ' + response.getTransactionResponse().getMessages().getMessage()[0].getDescription());
+                    // console.log('Successfully created transaction with Transaction ID: ' + response.getTransactionResponse().getTransId());
+                    // console.log('Response Code: ' + response.getTransactionResponse().getResponseCode());
+                    // console.log('Message Code: ' + response.getTransactionResponse().getMessages().getMessage()[0].getCode());
+                    // console.log('Description: ' + response.getTransactionResponse().getMessages().getMessage()[0].getDescription());
                 }
                 else {
                     console.log('Failed Transaction.');
                     if (response.getTransactionResponse().getErrors() != null) {
-                        console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
-                        console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
+                        // console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
+                        // console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
                     }
                 }
             }
@@ -133,12 +133,12 @@ function chargeCreditCard(data, callback) {
                 console.log('Failed Transaction. ');
                 if (response.getTransactionResponse() != null && response.getTransactionResponse().getErrors() != null) {
 
-                    console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
-                    console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
+                    // console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
+                    // console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
                 }
                 else {
-                    console.log('Error Code: ' + response.getMessages().getMessage()[0].getCode());
-                    console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
+                    // console.log('Error Code: ' + response.getMessages().getMessage()[0].getCode());
+                    // console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
                 }
             }
         }
