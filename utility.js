@@ -1,8 +1,8 @@
 'use strict';
 const { APIControllers, APIContracts: ApiContracts, } = require('authorizenet');
 const validator = require('validator');
-const apiID = process.env.apiID;
-const transactionKey = process.env.transactionKey;
+const apiID = "88DUc2uz";
+const transactionKey = "6gt59FauQ6S3g4E8";
 const random = require('random-key-generator')
 
 function chargeCreditCard(data, callback) {
@@ -101,8 +101,7 @@ function chargeCreditCard(data, callback) {
     createRequest.setMerchantAuthentication(merchantAuthenticationType);
     createRequest.setTransactionRequest(transactionRequestType);
 
-    //pretty print request
-    console.log(JSON.stringify(createRequest.getJSON(), null, 2));
+    // console.log(JSON.stringify(createRequest.getJSON(), null, 2));
 
     var ctrl = new APIControllers.CreateTransactionController(createRequest.getJSON());
     //Defaults to sandbox
@@ -112,10 +111,7 @@ function chargeCreditCard(data, callback) {
 
         var apiResponse = ctrl.getResponse();
 
-        var response = new ApiContracts.CreateTransactionResponse(apiResponse);
-
-        //pretty print response
-        console.log(JSON.stringify(response, null, 2));
+        var response = new ApiContracts.CreateTransactionResponse(apiResponse);  
 
         if (response != null) {
             if (response.getMessages().getResultCode() == ApiContracts.MessageTypeEnum.OK) {
