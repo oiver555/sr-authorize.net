@@ -2,12 +2,16 @@
 const express = require('express')
 const { chargeCreditCard, validateForm } = require('./utility')
 const app = express()
- 
+const bodyParser = require('body-parser');
+
+
 const cors = require('cors');
 app.use(cors());
+app.use(bodyParser.json())
 
 app.post('/charge/card', (req, res) => {
-    console.log(req)
+    console.log(req.body)
+
     const validationErrors = validateForm(req.body);
 
     if (validationErrors.length > 0) {
@@ -16,24 +20,7 @@ app.post('/charge/card', (req, res) => {
         return;
     } else {
         console.log("Validation Complete, Processing Card Now!")
-        const { cardNumber,firstName,lastName,address, cardCode, expiration, tithe1, tithe2, offering, bldg, email,  city , state, zip, country } = req.query;
-        chargeCreditCard({
-        firstName,
-        lastName,
-        address,
-        cardNumber,
-        expiration,
-        cardCode,  
-        city,
-        state,
-        zip,
-        country,
-        tithe1,
-        tithe2,
-        offering,
-        bldg,
-        email
-        }, function () {
+        chargeCreditCard(req.body, function () {
             console.log('chargeCreditCard call complete.');
         });
     }
@@ -50,13 +37,10 @@ app.get('/', (req, res) => {
 })
 
 // Enable CORS for all routes
-
-
-
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
-  });
+});
 
 

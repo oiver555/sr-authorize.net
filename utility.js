@@ -6,6 +6,7 @@ const transactionKey = process.env.transactionKey;
 const random = require('random-key-generator')
 
 function chargeCreditCard(data, callback) {
+    console.log("[Utility.js] chargeCreditCard()")
     var merchantAuthenticationType = new ApiContracts.MerchantAuthenticationType();
     merchantAuthenticationType.setName(apiID);
     merchantAuthenticationType.setTransactionKey(transactionKey);
@@ -89,6 +90,7 @@ function chargeCreditCard(data, callback) {
     var transactionRequestType = new ApiContracts.TransactionRequestType();
     transactionRequestType.setTransactionType(ApiContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
     transactionRequestType.setPayment(paymentType);
+   
     transactionRequestType.setAmount(JSON.parse(lineItem_id1.unitPrice) + JSON.parse(lineItem_id2.unitPrice) + JSON.parse(lineItem_id3.unitPrice) + JSON.parse(lineItem_id4.unitPrice));
     transactionRequestType.setLineItems(lineItems);
     transactionRequestType.setOrder(orderDetails);
@@ -153,7 +155,9 @@ function chargeCreditCard(data, callback) {
 }
 
 const validateForm = (req) => {
-    const { cardNumber, cardCode, expiration, tithe1, tithe2, offering, bldg, email  } = req;
+    console.log("[Utility.js] validateForm()" )
+
+    const { cardNumber,  expiration, tithe1, tithe2, offering, bldg, email } = req;
 
     const errors = [];
 
