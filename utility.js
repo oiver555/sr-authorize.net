@@ -3,7 +3,7 @@ const { APIControllers, APIContracts: ApiContracts, } = require('authorizenet');
 const validator = require('validator');
 const apiID = process.env.apiID;
 const transactionKey = process.env.transactionKey;
- 
+
 
 function chargeCreditCard(data, callback) {
     console.log("[Utility.js] chargeCreditCard()")
@@ -31,7 +31,7 @@ function chargeCreditCard(data, callback) {
     billTo.setState(data.state);
     billTo.setZip(data.zip);
     billTo.setCountry(data.country);
-    billTo.setEmail(data.email)
+    !data.anonymous && data.email && billTo.setEmail(data.email)
 
     var lineItem_id1 = new ApiContracts.LineItemType();
     lineItem_id1.setItemId('1');
@@ -77,7 +77,7 @@ function chargeCreditCard(data, callback) {
 
     var transactionSetting3 = new ApiContracts.SettingType();
     transactionSetting3.setSettingName('emailCustomer');
-    transactionSetting3.setSettingValue('true');
+    transactionSetting3.setSettingValue(data.anonymous ? 'false' : 'true');
 
     var transactionSettingList = [];
     transactionSettingList.push(transactionSetting1);
@@ -90,7 +90,7 @@ function chargeCreditCard(data, callback) {
     var transactionRequestType = new ApiContracts.TransactionRequestType();
     transactionRequestType.setTransactionType(ApiContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
     transactionRequestType.setPayment(paymentType);
-   
+
     transactionRequestType.setAmount(JSON.parse(lineItem_id1.unitPrice) + JSON.parse(lineItem_id2.unitPrice) + JSON.parse(lineItem_id3.unitPrice) + JSON.parse(lineItem_id4.unitPrice));
     transactionRequestType.setLineItems(lineItems);
     transactionRequestType.setOrder(orderDetails);
@@ -111,7 +111,7 @@ function chargeCreditCard(data, callback) {
 
         var apiResponse = ctrl.getResponse();
 
-        var response = new ApiContracts.CreateTransactionResponse(apiResponse);  
+        var response = new ApiContracts.CreateTransactionResponse(apiResponse);
 
         if (response != null) {
             if (response.getMessages().getResultCode() == ApiContracts.MessageTypeEnum.OK) {
@@ -151,9 +151,9 @@ function chargeCreditCard(data, callback) {
 }
 
 const validateForm = (req) => {
-    console.log("[Utility.js] validateForm()" )
+    console.log("[Utility.js] validateForm()")
 
-    const { cardNumber,  expiration, tithe1, tithe2, offering, bldg, email } = req;
+    const { cardNumber, expiration, tithe1, tithe2, offering, bldg, email } = req;
 
     const errors = [];
 
