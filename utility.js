@@ -3,7 +3,7 @@ const { APIControllers, APIContracts: ApiContracts, } = require('authorizenet');
 const validator = require('validator');
 const apiID = process.env.apiID;
 const transactionKey = process.env.transactionKey;
-const random = require('random-key-generator')
+ 
 
 function chargeCreditCard(data, callback) {
     console.log("[Utility.js] chargeCreditCard()")
@@ -20,7 +20,7 @@ function chargeCreditCard(data, callback) {
     paymentType.setCreditCard(creditCard);
 
     var orderDetails = new ApiContracts.OrderType();
-    orderDetails.setInvoiceNumber(`${data.source}-${data.invoiceNumber}`);
+    orderDetails.setInvoiceNumber(`${data.invoiceNumber}`);
     orderDetails.setDescription('Tithe & Offering');
 
     var billTo = new ApiContracts.CustomerAddressType();
@@ -94,7 +94,7 @@ function chargeCreditCard(data, callback) {
     transactionRequestType.setAmount(JSON.parse(lineItem_id1.unitPrice) + JSON.parse(lineItem_id2.unitPrice) + JSON.parse(lineItem_id3.unitPrice) + JSON.parse(lineItem_id4.unitPrice));
     transactionRequestType.setLineItems(lineItems);
     transactionRequestType.setOrder(orderDetails);
-    transactionRequestType.setBillTo(billTo);
+    !data.anonymous && transactionRequestType.setBillTo(billTo);
     transactionRequestType.setTransactionSettings(transactionSettings);
 
     var createRequest = new ApiContracts.CreateTransactionRequest();

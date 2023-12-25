@@ -28,7 +28,6 @@ app.post('/charge/card', (req, res) => {
                 requestedAt: req.requestTime,
                 data: result
             })
-
         });
     }
 });
