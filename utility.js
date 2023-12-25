@@ -153,7 +153,7 @@ function chargeCreditCard(data, callback) {
 const validateForm = (req) => {
     console.log("[Utility.js] validateForm()")
 
-    const { cardNumber, expiration, tithe1, tithe2, offering, bldg, email } = req;
+    const { cardNumber, expiration, tithe1, tithe2, offering, bldg, email, anonymous } = req;
 
     const errors = [];
 
@@ -165,7 +165,7 @@ const validateForm = (req) => {
         });
     }
 
-    if (!validator.isEmail(email)) {
+    if (!anonymous && !validator.isEmail(email)) {
         errors.push({
             param: 'email',
             value: email,
