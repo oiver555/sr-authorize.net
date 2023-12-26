@@ -186,7 +186,7 @@ function chargeCreditCard(data, callback) {
 const validateForm = (req) => {
     console.log("[Utility.js] validateForm()")
 
-    const { cardNumber, expiration, tithe1, tithe2,cardCode, offering, bldg, email, anonymous, firstName, lastName, zip } = req;
+    const { cardNumber, expiration, tithe1, tithe2,cardCode, offering, bldg, email, anonymous, firstName, lastName, zip , phone} = req;
 
     const errors = [];
 
