@@ -199,14 +199,14 @@ const validateForm = (req) => {
     }
 
  
-    if (!anonymous && !validator.isEmail(email)) {
+    if (!anonymous && validator.isEmail(email)) {
         errors.push({
             param: 'email',
             value: email,
             msg: 'Invalid Email.'
         });
     }
-    if (!anonymous && !validator.isEmpty(firstName)) {
+    if (!anonymous && validator.isEmpty(firstName)) {
         errors.push({
             param: 'firstName',
             value: firstName,
@@ -266,15 +266,7 @@ const validateForm = (req) => {
             msg: 'Invalid bldg.'
         });
     }
-    if (validator.isMobilePhone(phone, 'any', { strictMode: false })) {
-        
-        errors.push({
-            param: 'phone',
-            value: phone,
-            msg: 'Invalid Phone Number'
-        });
-    }
-
+     
     return errors;
 }
 
