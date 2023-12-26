@@ -35,7 +35,7 @@ app.post('/charge/card', (req, res) => {
     }
 });
 
-app.get('country/list', (req, res) => {
+app.get('/country/list', (req, res) => {
     console.log("Returning Country List")
     res.status(200).json({
         status: 'success',
