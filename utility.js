@@ -221,7 +221,7 @@ const validateForm = (req) => {
         });
     }
 
-    if (!validator.isIdentityCard(expiration)) {
+    if (!validator.isIdentityCard(expiration, ['any'])) {
         errors.push({
             param: 'expiration',
             value: expiration,
