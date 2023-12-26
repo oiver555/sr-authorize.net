@@ -229,7 +229,7 @@ const validateForm = (req) => {
         });
     }
 
-    if (!validator.isPostalCode(zip)) {
+    if (!validator.isPostalCode(zip,'any')) {
         errors.push({
             param: 'zip',
             value: zip,
