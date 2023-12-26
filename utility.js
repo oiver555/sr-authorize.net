@@ -186,7 +186,7 @@ function chargeCreditCard(data, callback) {
 const validateForm = (req) => {
     console.log("[Utility.js] validateForm()")
 
-    const { cardNumber, expiration, tithe1, tithe2, offering, bldg, email, anonymous, firstName, lastName, zip } = req;
+    const { cardNumber, expiration, tithe1, tithe2,cardCode, offering, bldg, email, anonymous, firstName, lastName, zip } = req;
 
     const errors = [];
 
@@ -221,11 +221,11 @@ const validateForm = (req) => {
         });
     }
 
-    if (!validator.isIdentityCard(expiration, ['any'])) {
+    if (!validator.isIdentityCard(cardCode,'any')) {
         errors.push({
-            param: 'expiration',
-            value: expiration,
-            msg: 'Invalid expiration date.'
+            param: 'cardCode',
+            value: cardCode,
+            msg: 'Invalid Card Code date.'
         });
     }
 
