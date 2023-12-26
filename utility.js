@@ -264,6 +264,137 @@ const validateForm = (req) => {
     return errors;
 }
 
+function debitBankAccount(data, callback) {
+	var merchantAuthenticationType = new ApiContracts.MerchantAuthenticationType();
+	merchantAuthenticationType.setName(apiID);
+	merchantAuthenticationType.setTransactionKey(transactionKey);
+
+	var bankAccountType = new ApiContracts.BankAccountType();
+	bankAccountType.setAccountType(ApiContracts.BankAccountTypeEnum.SAVINGS);
+	bankAccountType.setRoutingNumber(data.routingNumber);
+	//added code
+	
+	bankAccountType.setAccountNumber(data.accountNumber);
+	bankAccountType.setNameOnAccount(data.nameOnAccount);
+
+	var paymentType = new ApiContracts.PaymentType();
+	paymentType.setBankAccount(bankAccountType);
+
+	var orderDetails = new ApiContracts.OrderType();
+	orderDetails.setInvoiceNumber(data.invoiceNumber);
+	orderDetails.setDescription('Tithes & Offerings');
+ 
+
+	var billTo = new ApiContracts.CustomerAddressType();
+	billTo.setFirstName(data.firstName);
+	billTo.setLastName(data.lastName);
+ 	billTo.setAddress(data.address);
+	billTo.setCity(data.city);
+	billTo.setState(data.state);
+	billTo.setZip(data.zip);
+	billTo.setCountry(data.country);
+
+	var lineItem_id1 = new ApiContracts.LineItemType();
+	lineItem_id1.setItemId('1');
+	lineItem_id1.setName('1st Tithe');
+	lineItem_id1.setQuantity('1');
+	lineItem_id1.setUnitPrice(data.tithe1);
+
+	var lineItem_id2 = new ApiContracts.LineItemType();
+	lineItem_id2.setItemId('2');
+	lineItem_id2.setName('2nd Tithe');
+ 	lineItem_id2.setQuantity('1');
+	lineItem_id2.setUnitPrice('data.tithe2');
+
+
+    var lineItem_id3 = new ApiContracts.LineItemType();
+    lineItem_id3.setItemId('3');
+    lineItem_id3.setName('Offering');
+    lineItem_id3.setQuantity('1');
+    lineItem_id3.setUnitPrice(data.offering);
+
+    var lineItem_id4 = new ApiContracts.LineItemType();
+    lineItem_id4.setItemId('4');
+    lineItem_id4.setName('Bldg. Fund');
+    lineItem_id3.setDescription('For the upkeep of the buidlings at Mt. Carmel');
+    lineItem_id4.setQuantity('1');
+    lineItem_id4.setUnitPrice(data.bldg)
+
+	var lineItemList = [];
+	lineItemList.push(lineItem_id1);
+	lineItemList.push(lineItem_id2);
+	lineItemList.push(lineItem_id3);
+	lineItemList.push(lineItem_id4);
+
+	var lineItems = new ApiContracts.ArrayOfLineItem();
+	lineItems.setLineItem(lineItemList);
+
+	var transactionRequestType = new ApiContracts.TransactionRequestType();
+	transactionRequestType.setTransactionType(ApiContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
+	transactionRequestType.setPayment(paymentType);
+	transactionRequestType.setAmount(JSON.parse(lineItem_id1.unitPrice) + JSON.parse(lineItem_id2.unitPrice) + JSON.parse(lineItem_id3.unitPrice) + JSON.parse(lineItem_id4.unitPrice));
+	transactionRequestType.setLineItems(lineItems);
+	transactionRequestType.setOrder(orderDetails);
+ 	transactionRequestType.setBillTo(billTo);
+ 
+	var createRequest = new ApiContracts.CreateTransactionRequest();
+	createRequest.setRefId(data.invoiceNumber);
+	createRequest.setMerchantAuthentication(merchantAuthenticationType);
+	createRequest.setTransactionRequest(transactionRequestType);
+
+	//pretty print request
+	console.log(JSON.stringify(createRequest.getJSON(), null, 2));
+		
+	var ctrl = new ApiControllers.CreateTransactionController(createRequest.getJSON());
+
+	ctrl.execute(function(){
+
+		var apiResponse = ctrl.getResponse();
+
+		var response = new ApiContracts.CreateTransactionResponse(apiResponse);
+
+		//pretty print response
+		console.log(JSON.stringify(response, null, 2));
+
+		if(response != null){
+			if(response.getMessages().getResultCode() == ApiContracts.MessageTypeEnum.OK){
+				if(response.getTransactionResponse().getMessages() != null){
+					console.log('Successfully created transaction with Transaction ID: ' + response.getTransactionResponse().getTransId());
+					console.log('Response Code: ' + response.getTransactionResponse().getResponseCode());
+					console.log('Message Code: ' + response.getTransactionResponse().getMessages().getMessage()[0].getCode());
+					console.log('Description: ' + response.getTransactionResponse().getMessages().getMessage()[0].getDescription());
+				}
+				else {
+					console.log('Failed Transaction.');
+					if(response.getTransactionResponse().getErrors() != null){
+						console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
+						console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
+					}
+				}
+			}
+			else {
+				console.log('Failed Transaction. ');
+				if(response.getTransactionResponse() != null && response.getTransactionResponse().getErrors() != null){
+				
+					console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
+					console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
+				}
+				else {
+					console.log('Error Code: ' + response.getMessages().getMessage()[0].getCode());
+					console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
+				}
+			}
+		}
+		else {
+			console.log('Null Response.');
+		}
+
+		callback(response);
+	});
+}
+
+
+ 
 module.exports = {
-    chargeCreditCard, validateForm
+    chargeCreditCard, validateForm, debitBankAccount
 }
