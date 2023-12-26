@@ -3,6 +3,7 @@ const express = require('express')
 const { chargeCreditCard, validateForm } = require('./utility')
 const app = express()
 const bodyParser = require('body-parser');
+const { getNameList } = require('country-list')
 
 
 const cors = require('cors');
@@ -33,6 +34,16 @@ app.post('/charge/card', (req, res) => {
         });
     }
 });
+
+app.get('country/list', (req, res) => {
+    console.log("Returning Country List")
+    res.status(200).json({
+        status: 'success',
+        type: "Country",
+        requestedAt: req.requestTime,
+        data: getNameList()
+    })
+})
 
 app.get('/', (req, res) => {
     console.info('Hello from the Server!')
