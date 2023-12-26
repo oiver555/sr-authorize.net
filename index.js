@@ -16,7 +16,9 @@ app.post('/charge/card', (req, res) => {
 
     if (validationErrors.length > 0) {
         console.log("Errors", validationErrors)
-        res.json({ errors: validationErrors });
+        res.status(500).json({
+            errors: validationErrors
+        });
         return;
     } else {
         console.log("Validation Complete, Processing Card Now!")

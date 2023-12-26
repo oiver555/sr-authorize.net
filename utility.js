@@ -1,9 +1,42 @@
 'use strict';
 const { APIControllers, APIContracts: ApiContracts, } = require('authorizenet');
 const validator = require('validator');
+const nodemailer = require("nodemailer");
 const apiID = process.env.apiID;
 const transactionKey = process.env.transactionKey;
 
+const transporter = nodemailer.createTransport({
+    host: "smtp.forwardemail.net",
+    port: 465,
+    secure: true,
+    auth: {
+        // TODO: replace `user` and `pass` values from <https://forwardemail.net>
+        user: "REPLACE-WITH-YOUR-ALIAS@YOURDOMAIN.COM",
+        pass: "REPLACE-WITH-YOUR-GENERATED-PASSWORD",
+    },
+});
+
+
+
+async function main() {
+    // send mail with defined transport object
+    const info = await transporter.sendMail({
+        from: '"Fred Foo 👻" <gadsda@warwick.net>', // sender address
+        to: "osaintilien55@gmail.com, baz@example.com", // list of receivers
+        subject: "Donation Receipt", // Subject line
+        text: "Hello world?", // plain text body
+        html: "<b>Hello world?</b>", // html body
+    });
+
+    console.log("Message sent: %s", info.messageId);
+    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+
+    //
+    // NOTE: You can go to https://forwardemail.net/my-account/emails to see your email delivery status and preview
+    //       Or you can use the "preview-email" npm package to preview emails locally in browsers and iOS Simulator
+    //       <https://github.com/forwardemail/preview-email>
+    //
+}
 
 function chargeCreditCard(data, callback) {
     console.log("[Utility.js] chargeCreditCard()")
@@ -153,7 +186,7 @@ function chargeCreditCard(data, callback) {
 const validateForm = (req) => {
     console.log("[Utility.js] validateForm()")
 
-    const { cardNumber, expiration, tithe1, tithe2, offering, bldg, email, anonymous } = req;
+    const { cardNumber, expiration, tithe1, tithe2, offering, bldg, email, anonymous, firstName, lastName, zip } = req;
 
     const errors = [];
 
@@ -165,6 +198,7 @@ const validateForm = (req) => {
         });
     }
 
+ 
     if (!anonymous && !validator.isEmail(email)) {
         errors.push({
             param: 'email',
@@ -172,12 +206,34 @@ const validateForm = (req) => {
             msg: 'Invalid Email.'
         });
     }
+    if (!anonymous && !validator.isEmpty(firstName)) {
+        errors.push({
+            param: 'firstName',
+            value: firstName,
+            msg: 'Invalid First Name.'
+        });
+    }
+    if (!anonymous && !validator.isEmpty(lastName)) {
+        errors.push({
+            param: 'lastName',
+            value: lastName,
+            msg: 'Invalid Last Name.'
+        });
+    }
 
-    if (!/^\d{4}$/.test(expiration)) {
+    if (!validator.isIdentityCard(expiration)) {
         errors.push({
             param: 'expiration',
             value: expiration,
             msg: 'Invalid expiration date.'
+        });
+    }
+
+    if (!validator.isPostalCode(zip)) {
+        errors.push({
+            param: 'zip',
+            value: zip,
+            msg: 'Invalid Zip Code.'
         });
     }
 
@@ -208,6 +264,14 @@ const validateForm = (req) => {
             param: 'bldg',
             value: bldg,
             msg: 'Invalid bldg.'
+        });
+    }
+    if (validator.isMobilePhone(phone, 'any', { strictMode: false })) {
+        
+        errors.push({
+            param: 'phone',
+            value: phone,
+            msg: 'Invalid Phone Number'
         });
     }
 
