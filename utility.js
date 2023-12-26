@@ -221,13 +221,13 @@ const validateForm = (req) => {
         });
     }
 
-    if (!validator.isIdentityCard(cardCode,'any')) {
-        errors.push({
-            param: 'cardCode',
-            value: cardCode,
-            msg: 'Invalid Card Code date.'
-        });
-    }
+    // if (!validator.isIdentityCard(cardCode,'any')) {
+    //     errors.push({
+    //         param: 'cardCode',
+    //         value: cardCode,
+    //         msg: 'Invalid Card Code'
+    //     });
+    // }
 
     if (!validator.isPostalCode(zip,'any')) {
         errors.push({
