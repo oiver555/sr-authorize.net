@@ -199,7 +199,7 @@ const validateForm = (req) => {
     }
 
  
-    if (!anonymous && validator.isEmail(email)) {
+    if (!anonymous && !validator.isEmail(email)) {
         errors.push({
             param: 'email',
             value: email,
@@ -213,7 +213,7 @@ const validateForm = (req) => {
             msg: 'Invalid First Name.'
         });
     }
-    if (!anonymous && !validator.isEmpty(lastName)) {
+    if (!anonymous && validator.isEmpty(lastName)) {
         errors.push({
             param: 'lastName',
             value: lastName,
