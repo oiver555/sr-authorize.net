@@ -23,7 +23,7 @@ app.post('/charge/card', (req, res) => {
             requestedAt: req.requestTime,
             errors: validationErrors,
             message: "hey there",
-            body: validationErrors
+            data: validationErrors
         });
         return;
     } else {
