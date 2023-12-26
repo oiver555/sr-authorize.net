@@ -18,7 +18,11 @@ app.post('/charge/card', (req, res) => {
     if (validationErrors.length > 0) {
         console.log("Errors", validationErrors)
         res.status(500).json({
-            errors: validationErrors
+            status: "error",
+            type:"Card",
+            requestedAt: req.requestTime,
+            errors: validationErrors,
+            body: validationErrors
         });
         return;
     } else {
