@@ -183,10 +183,90 @@ function chargeCreditCard(data, callback) {
     });
 }
 
-const validateForm = (req) => {
-    console.log("[Utility.js] validateForm()")
+const validateCreditCard = (req) => {
+    console.log("[Utility.js] validateCreditCard()")
 
-    const { cardNumber, expiration, tithe1, tithe2,cardCode, offering, bldg, email, anonymous, firstName, lastName, zip , phone} = req;
+    const { cardNumber, tithe1, tithe2,cardCode, offering, bldg, email, anonymous, firstName, lastName, zip , phone} = req;
+
+    const errors = [];
+
+    if (!validator.isCreditCard(cardNumber)) {
+        errors.push({
+            param: 'cardNumber',
+            value: cardNumber,
+            msg: 'Invalid Credit Card Number'
+        });
+    }
+
+ 
+    if (!anonymous && !validator.isEmail(email)) {
+        errors.push({
+            param: 'email',
+            value: email,
+            msg: 'Invalid Email'
+        });
+    }
+    if (!anonymous && validator.isEmpty(firstName)) {
+        errors.push({
+            param: 'firstName',
+            value: firstName,
+            msg: 'Invalid First Name'
+        });
+    }
+    if (!anonymous && validator.isEmpty(lastName)) {
+        errors.push({
+            param: 'lastName',
+            value: lastName,
+            msg: 'Invalid Last Name'
+        });
+    }
+
+
+
+    if (!validator.isPostalCode(zip,'any')) {
+        errors.push({
+            param: 'zip',
+            value: zip,
+            msg: 'Invalid Zip Code'
+        });
+    }
+
+    if (!validator.isDecimal(tithe1)) {
+        errors.push({
+            param: 'tithe1',
+            value: tithe1,
+            msg: 'Invalid 1st Tithe'
+        });
+    }
+    if (!validator.isDecimal(tithe2)) {
+        errors.push({
+            param: 'tithe2',
+            value: tithe2,
+            msg: 'Invalid 2nd Tithe'
+        });
+    }
+    if (!validator.isDecimal(offering)) {
+        errors.push({
+            param: 'offering',
+            value: offering,
+            msg: 'Invalid Offering'
+        });
+    }
+    if (!validator.isDecimal(bldg)) {
+        console.log(bldg)
+        errors.push({
+            param: 'bldg',
+            value: bldg,
+            msg: 'Invalid Bldg. Amount'
+        });
+    }
+     
+    return errors;
+}
+const validateBankAccount = (req) => {
+    console.log("[Utility.js] validateBankAccount()")
+
+    const { bankAccountNumber, routingNumber, anonymous, firstName, lastName, zip, phone} = req;
 
     const errors = [];
 
@@ -217,7 +297,7 @@ const validateForm = (req) => {
         errors.push({
             param: 'lastName',
             value: lastName,
-            msg: 'Invalid Last Name.'
+            msg: 'Invalid Last Name'
         });
     }
 
@@ -227,7 +307,7 @@ const validateForm = (req) => {
         errors.push({
             param: 'zip',
             value: zip,
-            msg: 'Invalid Zip Code.'
+            msg: 'Invalid Zip Code'
         });
     }
 
@@ -235,21 +315,21 @@ const validateForm = (req) => {
         errors.push({
             param: 'tithe1',
             value: tithe1,
-            msg: 'Invalid tithe1.'
+            msg: 'Invalid 1st Tithe Amount'
         });
     }
     if (!validator.isDecimal(tithe2)) {
         errors.push({
             param: 'tithe2',
             value: tithe2,
-            msg: 'Invalid tithe2.'
+            msg: 'Invalid 2nd Tithe Amount'
         });
     }
     if (!validator.isDecimal(offering)) {
         errors.push({
             param: 'offering',
             value: offering,
-            msg: 'Invalid offering.'
+            msg: 'Invalid Offering Amount'
         });
     }
     if (!validator.isDecimal(bldg)) {
@@ -257,7 +337,7 @@ const validateForm = (req) => {
         errors.push({
             param: 'bldg',
             value: bldg,
-            msg: 'Invalid bldg.'
+            msg: 'Invalid Bldg. Amount'
         });
     }
      
@@ -396,5 +476,5 @@ function debitBankAccount(data, callback) {
 
  
 module.exports = {
-    chargeCreditCard, validateForm, debitBankAccount
+    chargeCreditCard, validateCreditCard,  validateBankAccount,  debitBankAccount
 }

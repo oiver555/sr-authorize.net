@@ -1,6 +1,6 @@
 'use strict';
 const express = require('express')
-const { chargeCreditCard, validateForm, debitBankAccount } = require('./utility')
+const { validateCreditCard, validateForm, debitBankAccount } = require('./utility')
 const app = express()
 const bodyParser = require('body-parser');
 const { getNameList } = require('country-list')
@@ -28,7 +28,7 @@ app.post('/charge/card', (req, res) => {
         return;
     } else {
         console.log("Validation Complete, Processing Card Now!")
-        chargeCreditCard(req.body, function (result) {
+        validateCreditCard(req.body, function (result) {
             console.log(result)
             res.status(200).json({
                 status: 'success',
