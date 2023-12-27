@@ -1,6 +1,6 @@
 'use strict';
 const express = require('express')
-const { validateCreditCard, validateForm, debitBankAccount } = require('./utility')
+const { validateCreditCard,chargeCreditCard, debitBankAccount } = require('./utility')
 const app = express()
 const bodyParser = require('body-parser');
 const { getNameList } = require('country-list')
@@ -13,7 +13,7 @@ app.use(bodyParser.json())
 app.post('/charge/card', (req, res) => {
     // console.log(req.body)
 
-    const validationErrors = validateForm(req.body);
+    const validationErrors = validateCreditCard (req.body);
 
     if (validationErrors.length > 0) {
         console.log("Errors", validationErrors)
@@ -28,7 +28,7 @@ app.post('/charge/card', (req, res) => {
         return;
     } else {
         console.log("Validation Complete, Processing Card Now!")
-        validateCreditCard(req.body, function (result) {
+        chargeCreditCard(req.body, function (result) {
             console.log(result)
             res.status(200).json({
                 status: 'success',
@@ -44,7 +44,7 @@ app.post('/charge/card', (req, res) => {
 app.post('/charge/bank', (req, res) => {
     // console.log(req.body)
 
-    // const validationErrors = validateForm(req.body);
+    // const validationErrors = validateCreditCard (req.body);
 
     // if (validationErrors.length > 0) {
     //     console.log("Errors", validationErrors)
