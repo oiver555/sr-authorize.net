@@ -136,7 +136,7 @@ function chargeCreditCard(data, callback) {
 
     // console.log(JSON.stringify(createRequest.getJSON(), null, 2));
 
-    var ctrl = new APIControllers.CreateTransactionController(createRequest.getJSON());
+    var ctrl =PI.CreateTransactionController(createRequest.getJSON());
     //Defaults to sandbox
     //ctrl.setEnvironment(SDKConstants.endpoint.production);
 
@@ -345,9 +345,10 @@ const validateBankAccount = (req) => {
 }
 
 function debitBankAccount(data, callback) {
+    console.log(data)
 	var merchantAuthenticationType = new ApiContracts.MerchantAuthenticationType();
-	merchantAuthenticationType.setName(apiID);
-	merchantAuthenticationType.setTransactionKey(transactionKey);
+	merchantAuthenticationType.setName("88DUc2uz");
+	merchantAuthenticationType.setTransactionKey("6gt59FauQ6S3g4E8");
 
 	var bankAccountType = new ApiContracts.BankAccountType();
 	bankAccountType.setAccountType(ApiContracts.BankAccountTypeEnum.SAVINGS);
@@ -384,7 +385,7 @@ function debitBankAccount(data, callback) {
 	lineItem_id2.setItemId('2');
 	lineItem_id2.setName('2nd Tithe');
  	lineItem_id2.setQuantity('1');
-	lineItem_id2.setUnitPrice('data.tithe2');
+	lineItem_id2.setUnitPrice(data.tithe2);
 
 
     var lineItem_id3 = new ApiContracts.LineItemType();
@@ -425,7 +426,7 @@ function debitBankAccount(data, callback) {
 	//pretty print request
 	console.log(JSON.stringify(createRequest.getJSON(), null, 2));
 		
-	var ctrl = new ApiControllers.CreateTransactionController(createRequest.getJSON());
+	var ctrl = new APIControllers.CreateTransactionController(createRequest.getJSON());
 
 	ctrl.execute(function(){
 

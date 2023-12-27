@@ -58,7 +58,7 @@ app.post('/charge/bank', (req, res) => {
     //     });
     //     return;
     // } else {
-        console.log("Validation Complete, Processing Bank Transaction Now!")
+        console.log("Validation Complete, Processing Bank Transaction Now!",req.body )
         debitBankAccount(req.body, function (result) {
             console.log(result)
             res.status(200).json({
