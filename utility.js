@@ -231,6 +231,7 @@ const validateCreditCard = (req) => {
      
     return errors;
 }
+
 const validateBankAccount = (req) => {
     console.log("[Utility.js] validateBankAccount()")
 
@@ -313,10 +314,10 @@ const validateBankAccount = (req) => {
 }
 
 function debitBankAccount(data, callback) {
-    console.log(data)
-	var merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
-	merchantAuthenticationType.setName("88DUc2uz");
-	merchantAuthenticationType.setTransactionKey("6gt59FauQ6S3g4E8");
+ 
+    var merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
+	merchantAuthenticationType.setName(apiID);
+	merchantAuthenticationType.setTransactionKey(transactionKey);
 
 	var bankAccountType = new APIContracts.BankAccountType();
 	bankAccountType.setAccountType(APIContracts.BankAccountTypeEnum.SAVINGS);
