@@ -104,7 +104,7 @@ function chargeCreditCard(data, callback) {
 
     // console.log(JSON.stringify(createRequest.getJSON(), null, 2));
 
-    var ctrl = APIControllers.CreateTransactionController(createRequest.getJSON());
+    var ctrl = new APIControllers.CreateTransactionController(createRequest.getJSON());
     //Defaults to sandbox
     //ctrl.setEnvironment(SDKConstants.endpoint.production);
 
