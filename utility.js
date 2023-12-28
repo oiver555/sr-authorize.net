@@ -1,62 +1,30 @@
 'use strict';
-const { APIControllers, APIContracts: ApiContracts, } = require('authorizenet');
+const { APIControllers,  APIContracts,  } = require('authorizenet');
 const validator = require('validator');
-const nodemailer = require("nodemailer");
 const apiID = process.env.apiID;
 const transactionKey = process.env.transactionKey;
 
-const transporter = nodemailer.createTransport({
-    host: "smtp.forwardemail.net",
-    port: 465,
-    secure: true,
-    auth: {
-        // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-        user: "REPLACE-WITH-YOUR-ALIAS@YOURDOMAIN.COM",
-        pass: "REPLACE-WITH-YOUR-GENERATED-PASSWORD",
-    },
-});
 
-
-
-async function main() {
-    // send mail with defined transport object
-    const info = await transporter.sendMail({
-        from: '"Fred Foo 👻" <gadsda@warwick.net>', // sender address
-        to: "osaintilien55@gmail.com, baz@example.com", // list of receivers
-        subject: "Donation Receipt", // Subject line
-        text: "Hello world?", // plain text body
-        html: "<b>Hello world?</b>", // html body
-    });
-
-    console.log("Message sent: %s", info.messageId);
-    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-
-    //
-    // NOTE: You can go to https://forwardemail.net/my-account/emails to see your email delivery status and preview
-    //       Or you can use the "preview-email" npm package to preview emails locally in browsers and iOS Simulator
-    //       <https://github.com/forwardemail/preview-email>
-    //
-}
 
 function chargeCreditCard(data, callback) {
     console.log("[Utility.js] chargeCreditCard()")
-    var merchantAuthenticationType = new ApiContracts.MerchantAuthenticationType();
+    var merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
     merchantAuthenticationType.setName(apiID);
     merchantAuthenticationType.setTransactionKey(transactionKey);
 
-    var creditCard = new ApiContracts.CreditCardType();
+    var creditCard = new APIContracts.CreditCardType();
     creditCard.setCardNumber(data.cardNumber);
     creditCard.setExpirationDate(data.expiration);
     creditCard.setCardCode(data.cardCode);
 
-    var paymentType = new ApiContracts.PaymentType();
+    var paymentType = new APIContracts.PaymentType();
     paymentType.setCreditCard(creditCard);
 
-    var orderDetails = new ApiContracts.OrderType();
+    var orderDetails = new APIContracts.OrderType();
     orderDetails.setInvoiceNumber(`${data.invoiceNumber}`);
     orderDetails.setDescription('Tithe & Offering');
 
-    var billTo = new ApiContracts.CustomerAddressType();
+    var billTo = new APIContracts.CustomerAddressType();
     billTo.setFirstName(data.firstName);
     billTo.setLastName(data.lastName);
     billTo.setAddress(data.address);
@@ -66,25 +34,25 @@ function chargeCreditCard(data, callback) {
     billTo.setCountry(data.country);
     !data.anonymous && data.email && billTo.setEmail(data.email)
 
-    var lineItem_id1 = new ApiContracts.LineItemType();
+    var lineItem_id1 = new APIContracts.LineItemType();
     lineItem_id1.setItemId('1');
     lineItem_id1.setName('1st Tithe');
     lineItem_id1.setQuantity('1');
     lineItem_id1.setUnitPrice(data.tithe1);
 
-    var lineItem_id2 = new ApiContracts.LineItemType();
+    var lineItem_id2 = new APIContracts.LineItemType();
     lineItem_id2.setItemId('2');
     lineItem_id2.setName('2nd Tithe');
     lineItem_id2.setQuantity('1');
     lineItem_id2.setUnitPrice(data.tithe2);
 
-    var lineItem_id3 = new ApiContracts.LineItemType();
+    var lineItem_id3 = new APIContracts.LineItemType();
     lineItem_id3.setItemId('3');
     lineItem_id3.setName('Offering');
     lineItem_id3.setQuantity('1');
     lineItem_id3.setUnitPrice(data.offering);
 
-    var lineItem_id4 = new ApiContracts.LineItemType();
+    var lineItem_id4 = new APIContracts.LineItemType();
     lineItem_id4.setItemId('4');
     lineItem_id4.setName('Bldg. Fund');
     lineItem_id3.setDescription('For the upkeep of the buidlings at Mt. Carmel');
@@ -97,18 +65,18 @@ function chargeCreditCard(data, callback) {
     lineItemList.push(lineItem_id3);
     lineItemList.push(lineItem_id4);
 
-    var lineItems = new ApiContracts.ArrayOfLineItem();
+    var lineItems = new APIContracts.ArrayOfLineItem();
     lineItems.setLineItem(lineItemList);
 
-    var transactionSetting1 = new ApiContracts.SettingType();
+    var transactionSetting1 = new APIContracts.SettingType();
     transactionSetting1.setSettingName('duplicateWindow');
     transactionSetting1.setSettingValue('120');
 
-    var transactionSetting2 = new ApiContracts.SettingType();
+    var transactionSetting2 = new APIContracts.SettingType();
     transactionSetting2.setSettingName('recurringBilling');
     transactionSetting2.setSettingValue('false');
 
-    var transactionSetting3 = new ApiContracts.SettingType();
+    var transactionSetting3 = new APIContracts.SettingType();
     transactionSetting3.setSettingName('emailCustomer');
     transactionSetting3.setSettingValue(data.anonymous ? 'false' : 'true');
 
@@ -117,11 +85,11 @@ function chargeCreditCard(data, callback) {
     transactionSettingList.push(transactionSetting2);
     transactionSettingList.push(transactionSetting3);
 
-    var transactionSettings = new ApiContracts.ArrayOfSetting();
+    var transactionSettings = new APIContracts.ArrayOfSetting();
     transactionSettings.setSetting(transactionSettingList);
 
-    var transactionRequestType = new ApiContracts.TransactionRequestType();
-    transactionRequestType.setTransactionType(ApiContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
+    var transactionRequestType = new APIContracts.TransactionRequestType();
+    transactionRequestType.setTransactionType(APIContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
     transactionRequestType.setPayment(paymentType);
 
     transactionRequestType.setAmount(JSON.parse(lineItem_id1.unitPrice) + JSON.parse(lineItem_id2.unitPrice) + JSON.parse(lineItem_id3.unitPrice) + JSON.parse(lineItem_id4.unitPrice));
@@ -130,7 +98,7 @@ function chargeCreditCard(data, callback) {
     !data.anonymous && transactionRequestType.setBillTo(billTo);
     transactionRequestType.setTransactionSettings(transactionSettings);
 
-    var createRequest = new ApiContracts.CreateTransactionRequest();
+    var createRequest = new APIContracts.CreateTransactionRequest();
     createRequest.setMerchantAuthentication(merchantAuthenticationType);
     createRequest.setTransactionRequest(transactionRequestType);
 
@@ -144,10 +112,10 @@ function chargeCreditCard(data, callback) {
 
         var apiResponse = ctrl.getResponse();
 
-        var response = new ApiContracts.CreateTransactionResponse(apiResponse);
+        var response = new APIContracts.CreateTransactionResponse(apiResponse);
 
         if (response != null) {
-            if (response.getMessages().getResultCode() == ApiContracts.MessageTypeEnum.OK) {
+            if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK) {
                 if (response.getTransactionResponse().getMessages() != null) {
                     // console.log('Successfully created transaction with Transaction ID: ' + response.getTransactionResponse().getTransId());
                     // console.log('Response Code: ' + response.getTransactionResponse().getResponseCode());
@@ -346,27 +314,27 @@ const validateBankAccount = (req) => {
 
 function debitBankAccount(data, callback) {
     console.log(data)
-	var merchantAuthenticationType = new ApiContracts.MerchantAuthenticationType();
+	var merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
 	merchantAuthenticationType.setName("88DUc2uz");
 	merchantAuthenticationType.setTransactionKey("6gt59FauQ6S3g4E8");
 
-	var bankAccountType = new ApiContracts.BankAccountType();
-	bankAccountType.setAccountType(ApiContracts.BankAccountTypeEnum.SAVINGS);
+	var bankAccountType = new APIContracts.BankAccountType();
+	bankAccountType.setAccountType(APIContracts.BankAccountTypeEnum.SAVINGS);
 	bankAccountType.setRoutingNumber(data.routingNumber);
 	//added code
 	
 	bankAccountType.setAccountNumber(data.accountNumber);
 	bankAccountType.setNameOnAccount(data.nameOnAccount);
 
-	var paymentType = new ApiContracts.PaymentType();
+	var paymentType = new APIContracts.PaymentType();
 	paymentType.setBankAccount(bankAccountType);
 
-	var orderDetails = new ApiContracts.OrderType();
+	var orderDetails = new APIContracts.OrderType();
 	orderDetails.setInvoiceNumber(data.invoiceNumber);
 	orderDetails.setDescription('Tithes & Offerings');
  
 
-	var billTo = new ApiContracts.CustomerAddressType();
+	var billTo = new APIContracts.CustomerAddressType();
 	billTo.setFirstName(data.firstName);
 	billTo.setLastName(data.lastName);
  	billTo.setAddress(data.address);
@@ -375,26 +343,26 @@ function debitBankAccount(data, callback) {
 	billTo.setZip(data.zip);
 	billTo.setCountry(data.country);
 
-	var lineItem_id1 = new ApiContracts.LineItemType();
+	var lineItem_id1 = new APIContracts.LineItemType();
 	lineItem_id1.setItemId('1');
 	lineItem_id1.setName('1st Tithe');
 	lineItem_id1.setQuantity('1');
 	lineItem_id1.setUnitPrice(data.tithe1);
 
-	var lineItem_id2 = new ApiContracts.LineItemType();
+	var lineItem_id2 = new APIContracts.LineItemType();
 	lineItem_id2.setItemId('2');
 	lineItem_id2.setName('2nd Tithe');
  	lineItem_id2.setQuantity('1');
 	lineItem_id2.setUnitPrice(data.tithe2);
 
 
-    var lineItem_id3 = new ApiContracts.LineItemType();
+    var lineItem_id3 = new APIContracts.LineItemType();
     lineItem_id3.setItemId('3');
     lineItem_id3.setName('Offering');
     lineItem_id3.setQuantity('1');
     lineItem_id3.setUnitPrice(data.offering);
 
-    var lineItem_id4 = new ApiContracts.LineItemType();
+    var lineItem_id4 = new APIContracts.LineItemType();
     lineItem_id4.setItemId('4');
     lineItem_id4.setName('Bldg. Fund');
     lineItem_id3.setDescription('For the upkeep of the buidlings at Mt. Carmel');
@@ -407,18 +375,18 @@ function debitBankAccount(data, callback) {
 	lineItemList.push(lineItem_id3);
 	lineItemList.push(lineItem_id4);
 
-	var lineItems = new ApiContracts.ArrayOfLineItem();
+	var lineItems = new APIContracts.ArrayOfLineItem();
 	lineItems.setLineItem(lineItemList);
 
-	var transactionRequestType = new ApiContracts.TransactionRequestType();
-	transactionRequestType.setTransactionType(ApiContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
+	var transactionRequestType = new APIContracts.TransactionRequestType();
+	transactionRequestType.setTransactionType(APIContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
 	transactionRequestType.setPayment(paymentType);
 	transactionRequestType.setAmount(JSON.parse(lineItem_id1.unitPrice) + JSON.parse(lineItem_id2.unitPrice) + JSON.parse(lineItem_id3.unitPrice) + JSON.parse(lineItem_id4.unitPrice));
 	transactionRequestType.setLineItems(lineItems);
 	transactionRequestType.setOrder(orderDetails);
  	transactionRequestType.setBillTo(billTo);
  
-	var createRequest = new ApiContracts.CreateTransactionRequest();
+	var createRequest = new APIContracts.CreateTransactionRequest();
 	createRequest.setRefId(data.invoiceNumber);
 	createRequest.setMerchantAuthentication(merchantAuthenticationType);
 	createRequest.setTransactionRequest(transactionRequestType);
@@ -432,13 +400,13 @@ function debitBankAccount(data, callback) {
 
 		var apiResponse = ctrl.getResponse();
 
-		var response = new ApiContracts.CreateTransactionResponse(apiResponse);
+		var response = new APIContracts.CreateTransactionResponse(apiResponse);
 
 		//pretty print response
 		console.log(JSON.stringify(response, null, 2));
 
 		if(response != null){
-			if(response.getMessages().getResultCode() == ApiContracts.MessageTypeEnum.OK){
+			if(response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK){
 				if(response.getTransactionResponse().getMessages() != null){
 					console.log('Successfully created transaction with Transaction ID: ' + response.getTransactionResponse().getTransId());
 					console.log('Response Code: ' + response.getTransactionResponse().getResponseCode());
