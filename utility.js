@@ -1,5 +1,5 @@
 'use strict';
-const { APIControllers,  APIContracts,  } = require('authorizenet');
+const { APIControllers, APIContracts, } = require('authorizenet');
 const validator = require('validator');
 const apiID = process.env.apiID;
 const transactionKey = process.env.transactionKey;
@@ -150,11 +150,117 @@ function chargeCreditCard(data, callback) {
         callback(response);
     });
 }
+function chargeCreditCardMobile(data, callback) {
+    console.log("[Utility.js] chargeCreditCard()")
+    var merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
+    merchantAuthenticationType.setName(apiID);
+    merchantAuthenticationType.setTransactionKey(transactionKey);
+
+    var creditCard = new APIContracts.CreditCardType();
+    creditCard.setCardNumber(data.cardNumber);
+    creditCard.setExpirationDate(data.month + data.year);
+    creditCard.setCardCode(data.cardCode);
+
+    var paymentType = new APIContracts.PaymentType();
+    paymentType.setCreditCard(creditCard);
+
+    var orderDetails = new APIContracts.OrderType();
+    orderDetails.setInvoiceNumber(`${data.invoiceNumber}`);
+    orderDetails.setDescription('Tithe & Offering');
+
+    var billTo = new APIContracts.CustomerAddressType();
+    billTo.setFirstName(data.firstName);
+    billTo.setLastName(data.lastName);
+    billTo.setZip(data.zip);
+    !data.anonymous && data.email && billTo.setEmail(data.email)
+
+    var lineItem_id1 = new APIContracts.LineItemType();
+    lineItem_id1.setItemId('1');
+    lineItem_id1.setName('Amount');
+    lineItem_id1.setQuantity('1');
+    lineItem_id1.setUnitPrice(data.amount);
+
+    var lineItemList = [];
+    lineItemList.push(lineItem_id1);
+
+    var lineItems = new APIContracts.ArrayOfLineItem();
+    lineItems.setLineItem(lineItemList);
+
+    var transactionSetting1 = new APIContracts.SettingType();
+    transactionSetting1.setSettingName('duplicateWindow');
+    transactionSetting1.setSettingValue('120');
+
+    var transactionSetting2 = new APIContracts.SettingType();
+    transactionSetting2.setSettingName('recurringBilling');
+    transactionSetting2.setSettingValue('false');
+
+    var transactionSetting3 = new APIContracts.SettingType();
+    transactionSetting3.setSettingName('emailCustomer');
+    transactionSetting3.setSettingValue(data.anonymous ? 'false' : 'true');
+
+    var transactionSettingList = [];
+    transactionSettingList.push(transactionSetting1);
+    transactionSettingList.push(transactionSetting2);
+    transactionSettingList.push(transactionSetting3);
+
+    var transactionSettings = new APIContracts.ArrayOfSetting();
+    transactionSettings.setSetting(transactionSettingList);
+
+    var transactionRequestType = new APIContracts.TransactionRequestType();
+    transactionRequestType.setTransactionType(APIContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
+    transactionRequestType.setPayment(paymentType);
+
+    transactionRequestType.setAmount(JSON.parse(lineItem_id1.unitPrice));
+    transactionRequestType.setLineItems(lineItems);
+    transactionRequestType.setOrder(orderDetails);
+    !data.anonymous && transactionRequestType.setBillTo(billTo);
+    transactionRequestType.setTransactionSettings(transactionSettings);
+
+    var createRequest = new APIContracts.CreateTransactionRequest();
+    createRequest.setMerchantAuthentication(merchantAuthenticationType);
+    createRequest.setTransactionRequest(transactionRequestType);
+
+    // console.log(JSON.stringify(createRequest.getJSON(), null, 2));
+
+    var ctrl = new APIControllers.CreateTransactionController(createRequest.getJSON());
+    //Defaults to sandbox
+    //ctrl.setEnvironment(SDKConstants.endpoint.production);
+
+    ctrl.execute(function () {
+
+        var apiResponse = ctrl.getResponse();
+
+        var response = new APIContracts.CreateTransactionResponse(apiResponse);
+
+        if (response != null) {
+            if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK) {
+                if (response.getTransactionResponse().getMessages() != null) {
+
+                }
+                else {
+                    console.log('Failed Transaction.');
+                    if (response.getTransactionResponse().getErrors() != null) {
+
+                    }
+                }
+            }
+            else {
+                console.log('Failed Transaction. ');
+
+            }
+        }
+        else {
+            console.log('Null Response.');
+        }
+
+        callback(response);
+    });
+}
 
 const validateCreditCard = (req) => {
     console.log("[Utility.js] validateCreditCard()")
 
-    const { cardNumber, tithe1, tithe2,cardCode, offering, bldg, email, anonymous, firstName, lastName, zip , phone} = req;
+    const { cardNumber, tithe1, tithe2, cardCode, offering, bldg, email, anonymous, firstName, lastName, zip, phone } = req;
 
     const errors = [];
 
@@ -166,7 +272,7 @@ const validateCreditCard = (req) => {
         });
     }
 
- 
+
     if (!anonymous && !validator.isEmail(email)) {
         errors.push({
             param: 'email',
@@ -191,7 +297,7 @@ const validateCreditCard = (req) => {
 
 
 
-    if (!validator.isPostalCode(zip,'any')) {
+    if (!validator.isPostalCode(zip, 'any')) {
         errors.push({
             param: 'zip',
             value: zip,
@@ -228,14 +334,14 @@ const validateCreditCard = (req) => {
             msg: 'Invalid Bldg. Amount'
         });
     }
-     
+
     return errors;
 }
 
 const validateBankAccount = (req) => {
     console.log("[Utility.js] validateBankAccount()")
 
-    const { bankAccountNumber, routingNumber, anonymous, firstName, lastName, zip, phone} = req;
+    const { bankAccountNumber, routingNumber, anonymous, firstName, lastName, zip, phone } = req;
 
     const errors = [];
 
@@ -247,7 +353,7 @@ const validateBankAccount = (req) => {
         });
     }
 
- 
+
     if (!anonymous && !validator.isEmail(email)) {
         errors.push({
             param: 'email',
@@ -272,7 +378,7 @@ const validateBankAccount = (req) => {
 
 
 
-    if (!validator.isPostalCode(zip,'any')) {
+    if (!validator.isPostalCode(zip, 'any')) {
         errors.push({
             param: 'zip',
             value: zip,
@@ -309,52 +415,52 @@ const validateBankAccount = (req) => {
             msg: 'Invalid Bldg. Amount'
         });
     }
-     
+
     return errors;
 }
 
 function debitBankAccount(data, callback) {
- 
+
     var merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
-	merchantAuthenticationType.setName(apiID);
-	merchantAuthenticationType.setTransactionKey(transactionKey);
+    merchantAuthenticationType.setName(apiID);
+    merchantAuthenticationType.setTransactionKey(transactionKey);
 
-	var bankAccountType = new APIContracts.BankAccountType();
-	bankAccountType.setAccountType(APIContracts.BankAccountTypeEnum.SAVINGS);
-	bankAccountType.setRoutingNumber(data.routingNumber);
-	//added code
-	
-	bankAccountType.setAccountNumber(data.accountNumber);
-	bankAccountType.setNameOnAccount(data.nameOnAccount);
+    var bankAccountType = new APIContracts.BankAccountType();
+    bankAccountType.setAccountType(APIContracts.BankAccountTypeEnum.SAVINGS);
+    bankAccountType.setRoutingNumber(data.routingNumber);
+    //added code
 
-	var paymentType = new APIContracts.PaymentType();
-	paymentType.setBankAccount(bankAccountType);
+    bankAccountType.setAccountNumber(data.accountNumber);
+    bankAccountType.setNameOnAccount(data.nameOnAccount);
 
-	var orderDetails = new APIContracts.OrderType();
-	orderDetails.setInvoiceNumber(data.invoiceNumber);
-	orderDetails.setDescription('Tithes & Offerings');
- 
+    var paymentType = new APIContracts.PaymentType();
+    paymentType.setBankAccount(bankAccountType);
 
-	var billTo = new APIContracts.CustomerAddressType();
-	billTo.setFirstName(data.firstName);
-	billTo.setLastName(data.lastName);
- 	billTo.setAddress(data.address);
-	billTo.setCity(data.city);
-	billTo.setState(data.state);
-	billTo.setZip(data.zip);
-	billTo.setCountry(data.country);
+    var orderDetails = new APIContracts.OrderType();
+    orderDetails.setInvoiceNumber(data.invoiceNumber);
+    orderDetails.setDescription('Tithes & Offerings');
 
-	var lineItem_id1 = new APIContracts.LineItemType();
-	lineItem_id1.setItemId('1');
-	lineItem_id1.setName('1st Tithe');
-	lineItem_id1.setQuantity('1');
-	lineItem_id1.setUnitPrice(data.tithe1);
 
-	var lineItem_id2 = new APIContracts.LineItemType();
-	lineItem_id2.setItemId('2');
-	lineItem_id2.setName('2nd Tithe');
- 	lineItem_id2.setQuantity('1');
-	lineItem_id2.setUnitPrice(data.tithe2);
+    var billTo = new APIContracts.CustomerAddressType();
+    billTo.setFirstName(data.firstName);
+    billTo.setLastName(data.lastName);
+    billTo.setAddress(data.address);
+    billTo.setCity(data.city);
+    billTo.setState(data.state);
+    billTo.setZip(data.zip);
+    billTo.setCountry(data.country);
+
+    var lineItem_id1 = new APIContracts.LineItemType();
+    lineItem_id1.setItemId('1');
+    lineItem_id1.setName('1st Tithe');
+    lineItem_id1.setQuantity('1');
+    lineItem_id1.setUnitPrice(data.tithe1);
+
+    var lineItem_id2 = new APIContracts.LineItemType();
+    lineItem_id2.setItemId('2');
+    lineItem_id2.setName('2nd Tithe');
+    lineItem_id2.setQuantity('1');
+    lineItem_id2.setUnitPrice(data.tithe2);
 
 
     var lineItem_id3 = new APIContracts.LineItemType();
@@ -370,81 +476,81 @@ function debitBankAccount(data, callback) {
     lineItem_id4.setQuantity('1');
     lineItem_id4.setUnitPrice(data.bldg)
 
-	var lineItemList = [];
-	lineItemList.push(lineItem_id1);
-	lineItemList.push(lineItem_id2);
-	lineItemList.push(lineItem_id3);
-	lineItemList.push(lineItem_id4);
+    var lineItemList = [];
+    lineItemList.push(lineItem_id1);
+    lineItemList.push(lineItem_id2);
+    lineItemList.push(lineItem_id3);
+    lineItemList.push(lineItem_id4);
 
-	var lineItems = new APIContracts.ArrayOfLineItem();
-	lineItems.setLineItem(lineItemList);
+    var lineItems = new APIContracts.ArrayOfLineItem();
+    lineItems.setLineItem(lineItemList);
 
-	var transactionRequestType = new APIContracts.TransactionRequestType();
-	transactionRequestType.setTransactionType(APIContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
-	transactionRequestType.setPayment(paymentType);
-	transactionRequestType.setAmount(JSON.parse(lineItem_id1.unitPrice) + JSON.parse(lineItem_id2.unitPrice) + JSON.parse(lineItem_id3.unitPrice) + JSON.parse(lineItem_id4.unitPrice));
-	transactionRequestType.setLineItems(lineItems);
-	transactionRequestType.setOrder(orderDetails);
- 	transactionRequestType.setBillTo(billTo);
- 
-	var createRequest = new APIContracts.CreateTransactionRequest();
-	createRequest.setRefId(data.invoiceNumber);
-	createRequest.setMerchantAuthentication(merchantAuthenticationType);
-	createRequest.setTransactionRequest(transactionRequestType);
+    var transactionRequestType = new APIContracts.TransactionRequestType();
+    transactionRequestType.setTransactionType(APIContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
+    transactionRequestType.setPayment(paymentType);
+    transactionRequestType.setAmount(JSON.parse(lineItem_id1.unitPrice) + JSON.parse(lineItem_id2.unitPrice) + JSON.parse(lineItem_id3.unitPrice) + JSON.parse(lineItem_id4.unitPrice));
+    transactionRequestType.setLineItems(lineItems);
+    transactionRequestType.setOrder(orderDetails);
+    transactionRequestType.setBillTo(billTo);
 
-	//pretty print request
-	console.log(JSON.stringify(createRequest.getJSON(), null, 2));
-		
-	var ctrl = new APIControllers.CreateTransactionController(createRequest.getJSON());
+    var createRequest = new APIContracts.CreateTransactionRequest();
+    createRequest.setRefId(data.invoiceNumber);
+    createRequest.setMerchantAuthentication(merchantAuthenticationType);
+    createRequest.setTransactionRequest(transactionRequestType);
 
-	ctrl.execute(function(){
+    //pretty print request
+    console.log(JSON.stringify(createRequest.getJSON(), null, 2));
 
-		var apiResponse = ctrl.getResponse();
+    var ctrl = new APIControllers.CreateTransactionController(createRequest.getJSON());
 
-		var response = new APIContracts.CreateTransactionResponse(apiResponse);
+    ctrl.execute(function () {
 
-		//pretty print response
-		console.log(JSON.stringify(response, null, 2));
+        var apiResponse = ctrl.getResponse();
 
-		if(response != null){
-			if(response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK){
-				if(response.getTransactionResponse().getMessages() != null){
-					console.log('Successfully created transaction with Transaction ID: ' + response.getTransactionResponse().getTransId());
-					console.log('Response Code: ' + response.getTransactionResponse().getResponseCode());
-					console.log('Message Code: ' + response.getTransactionResponse().getMessages().getMessage()[0].getCode());
-					console.log('Description: ' + response.getTransactionResponse().getMessages().getMessage()[0].getDescription());
-				}
-				else {
-					console.log('Failed Transaction.');
-					if(response.getTransactionResponse().getErrors() != null){
-						console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
-						console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
-					}
-				}
-			}
-			else {
-				console.log('Failed Transaction. ');
-				if(response.getTransactionResponse() != null && response.getTransactionResponse().getErrors() != null){
-				
-					console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
-					console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
-				}
-				else {
-					console.log('Error Code: ' + response.getMessages().getMessage()[0].getCode());
-					console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
-				}
-			}
-		}
-		else {
-			console.log('Null Response.');
-		}
+        var response = new APIContracts.CreateTransactionResponse(apiResponse);
 
-		callback(response);
-	});
+        //pretty print response
+        console.log(JSON.stringify(response, null, 2));
+
+        if (response != null) {
+            if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK) {
+                if (response.getTransactionResponse().getMessages() != null) {
+                    console.log('Successfully created transaction with Transaction ID: ' + response.getTransactionResponse().getTransId());
+                    console.log('Response Code: ' + response.getTransactionResponse().getResponseCode());
+                    console.log('Message Code: ' + response.getTransactionResponse().getMessages().getMessage()[0].getCode());
+                    console.log('Description: ' + response.getTransactionResponse().getMessages().getMessage()[0].getDescription());
+                }
+                else {
+                    console.log('Failed Transaction.');
+                    if (response.getTransactionResponse().getErrors() != null) {
+                        console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
+                        console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
+                    }
+                }
+            }
+            else {
+                console.log('Failed Transaction. ');
+                if (response.getTransactionResponse() != null && response.getTransactionResponse().getErrors() != null) {
+
+                    console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
+                    console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
+                }
+                else {
+                    console.log('Error Code: ' + response.getMessages().getMessage()[0].getCode());
+                    console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
+                }
+            }
+        }
+        else {
+            console.log('Null Response.');
+        }
+
+        callback(response);
+    });
 }
 
 
- 
+
 module.exports = {
-    chargeCreditCard, validateCreditCard,  validateBankAccount,  debitBankAccount
+    chargeCreditCard, validateCreditCard, chargeCreditCardMobile, validateBankAccount, debitBankAccount
 }
