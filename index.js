@@ -11,8 +11,7 @@ app.use(cors());
 app.use(bodyParser.json())
 
 app.post('/charge/card', (req, res) => {
-    // console.log(req.body)
-
+    console.log(req.body)
     const validationErrors = validateCreditCard(req.body);
 
     if (validationErrors.length > 0) {

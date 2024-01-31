@@ -7,7 +7,7 @@ const transactionKey = process.env.transactionKey;
 
 
 function chargeCreditCard(data, callback) {
-    console.log("[Utility.js] chargeCreditCard()")
+    console.log("[Utility.js] chargeCreditCard()", apiID, transactionKey)
     var merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
     merchantAuthenticationType.setName(apiID);
     merchantAuthenticationType.setTransactionKey(transactionKey);
