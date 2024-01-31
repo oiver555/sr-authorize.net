@@ -1,5 +1,5 @@
 'use strict';
-const { APIControllers, APIContracts, } = require('authorizenet');
+const { APIControllers, APIContracts, Constants } = require('authorizenet');
 const validator = require('validator');
 const apiID = process.env.apiID;
 const transactionKey = process.env.transactionKey;
@@ -106,7 +106,7 @@ function chargeCreditCard(data, callback) {
 
     var ctrl = new APIControllers.CreateTransactionController(createRequest.getJSON());
     //Defaults to sandbox
-    //ctrl.setEnvironment(SDKConstants.endpoint.production);
+    ctrl.setEnvironment(Constants.endpoint.production);
 
     ctrl.execute(function () {
 
