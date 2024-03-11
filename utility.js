@@ -12,10 +12,11 @@ const testData = {
   zip: 12763,
   state: "New York",
   country: "USA",
-  email: "osaintilien55@gmail.com",
+  email: "glenroy_matthews@yahoo.com",
   phone: "9736668136",
   tithe1: 50,
   tithe2: 50,
+  amount: 100,
   offering: 5,
   bldg: 5,
   total: 200,
@@ -42,7 +43,7 @@ const emailRecipt = async (data, type, transactionResponse) => {
   const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
   const yyyy = today.getFullYear();
   today = mm + '/' + dd + '/' + yyyy;
-  
+
   const time = Date.now()
 
   const options = {
@@ -60,10 +61,10 @@ const emailRecipt = async (data, type, transactionResponse) => {
   return transporter.sendMail({
     from: 'admin@shepherds-rod-message.org', // sender address
     to: data.email, // list of receivers
-    subject: "Receipt", // Subject line
+    subject: "Shepherd's Rod Tithe Receipt", // Subject line
     text: `Since HTML has been disabled on your email client we have opted to send you a plain text version of our receipt. \nMay God Bless your Faithfulness!\n You may print this receipt page for your records.\n\n\n Receipt Information\nMerchant: GENERAL ASSOC. OF DAVIDIAN SEVENTH DAY ADVENTIST\nInvoice Number :${data.invoiceNumber}\nDate: ${today}\nTime: ${formattedTime} EST\nFirst Name: ${data.firstName}\nLast Name: ${data.lastName}\nCity: ${data.city}\nZip: ${data.zip}\nState: ${data.state}\nCountry: ${data.country}\nEmail: ${data.email}\nPhone: ${data.phone}\n1st Tithe: ${data.tithe1}\n2nd Tithe: ${data.tithe2}\nOffering: ${data.offering}\nBldg.: ${data.bldg}\nTotal: ${data.total}\nAccount Number: ${data.accountNumber}\nTransaction ID: ${transactionResponse.transId}\nTransaction Auth. Code: ${transactionResponse.authCode}\n`, // plain text body
     html: `         
-  <body style="margin: 25px 200px; padding: 10px; outline: solid 2px black; color: black">
+  <body style="margin: 25px; padding: 10px; outline: solid 2px black; color: black">
   <h3 style="font-family: arial; margin: 0; padding: 0; text-align:left">
     May God Bless your Faithfulness!
   </h3>
@@ -157,7 +158,7 @@ const emailRecipt = async (data, type, transactionResponse) => {
     </div>
     <div style="font-size: 13px; text-align:left">Auth Code: ${transactionResponse.authCode}</div>
     <div style="font-size: 13px; text-align:left">
-      Payment Method: ${type}
+      Payment Method: ${type}<br>
       Invoice Number: ${data.invoiceNumber}</span>
     </div>
   </div>
@@ -177,15 +178,29 @@ const emailReciptMobile = async (data, type, transactionResponse) => {
 
   const time = Date.now()
 
+
+  const options = {
+    timeZone: 'America/New_York', // Set time zone to Eastern Standard Time (EST)
+    hour12: true, // Use 12-hour time format (true) or 24-hour format (false)
+    hour: 'numeric', // Display hours
+    minute: 'numeric', // Display minutes
+    second: 'numeric' // Display seconds
+  };
+
+  // Convert Date object to a readable string in EST time zone
+  const formattedTime = new Date(time).toLocaleString('en-US', options);
+
+  console.log(formattedTime)
+
   return transporter.sendMail({
-    from: 'admin@shepherds-rod-message.or', // sender address
+    from: 'admin@shepherds-rod-message.org', // sender address
     to: data.email, // list of receivers
     subject: "VTH Writings Receipt", // Subject line
     text: `Since HTML has been disabled on your email client we have opted to send you a plain text version of our receipt.\nMay God Bless your Kindness!\n You may print this receipt page for your records.\n\n\n Receipt Information\nMerchant: GENERAL ASSOC. OF DAVIDIAN SEVENTH DAY ADVENTIST\nInvoice Number :${data.invoiceNumber}\nDate: ${today}\nTime: ${formattedTime}\nFirst Name: ${data.firstName}\nLast Name: ${data.lastName}\nCity: ${data.city}\nZip: ${data.zip}\nState: ${data.state}\nCountry: ${data.country}\nEmail: ${data.email}\nPhone: ${data.phone}\nTotal: ${data.amount}\nAccount Number: ${data.accountNumber}\nTransaction ID: ${transactionResponse.transId}\nTransaction Auth. Code: ${transactionResponse.authCode}\n`, // plain text body
     html: `         
-  <body style="padding: 10px; outline: solid 2px black">
+  <body style="margin: 25px; padding: 10px; outline: solid 2px black; color: black">
   <h3 style="font-family: arial; margin: 0; padding: 0; text-align:left">
-    May God Bless your Kindness!
+    May God Bless your Faithfulness!
   </h3>
   <hr size="2px" />
   <div style="font-size: 14px; font-weight: 100;  text-align:left">
@@ -197,12 +212,7 @@ const emailReciptMobile = async (data, type, transactionResponse) => {
   </div>
 
   <div
-    style="
-      display: flex;
-      flex-direction: column;
-      height: 60px;
-      justify-content: space-between;
-    "
+   
   >
     <div style="display: flex; justify-content: space-between">
       <div style="flex: 0.2; font-size: 13px;  text-align:left">Merchant:</div>
@@ -216,11 +226,9 @@ const emailReciptMobile = async (data, type, transactionResponse) => {
         INV-${data.invoiceNumber}
       </div>
     </div>
-    <div style="display: flex; justify-content: space-between">
-      <div style="flex: 0.2; font-size: 13px; text-align:left">Date/Time:</div>
-      <div style="flex: 0.8; font-size: 13px; text-align:left">
-        <span>${today}</span> <span>${formattedTime}</span>
-      </div>
+    <div >
+      <div style="font-size: 13px; text-align:left">Date: ${today}</div>      
+      <div style="font-size: 13px; text-align:left">Time: ${formattedTime} EST</div>     
     </div>
   </div>
 
@@ -230,53 +238,70 @@ const emailReciptMobile = async (data, type, transactionResponse) => {
   </div>
 
   <div style="font-size: 13px;  text-align:left">
-    <span style=" text-align:left" id="receipt-name">${data.firstName}</span><br />
-    <span style=" text-align:left" id="receipt-address">${data.lastName}</span><br />
-    <span style=" text-align:left" id="receipt-city">${data.city}</span> <span style=" text-align:left" id="receipt-state">${data.state}</span>
-    <span style=" text-align:left" id="receipt-zip">${data.zip}</span><br />
-    <span style=" text-align:left" id="receipt-country">${data.country}</span><br />
-    <span style=" text-align:left" id="receipt-email">${data.email}</span><br />
-    Phone: <span id="receipt-phone" style=" text-align:left">${data.phone}</span>
+    <span style="text-align:left">First Name: ${data.firstName}</span><br />
+    <span style="text-align:left">Last Name: ${data.lastName}</span><br />
+    <span style="text-align:left">City: ${data.city}</span><br />
+    <span style="text-align:left">State: ${data.state}</span><br />
+    <span style="text-align:left">Zip: ${data.zip}</span><br />
+    <span style="text-align:left">Country: ${data.country}</span><br />
+    <span style="text-align:left">Email: ${data.email}</span><br />
+    <span style="text-align:left">Phone: ${data.phone}</span>
+  </div>
+  <hr size="2px" />
+  <div style="display: flex; position: relative">
+    <div style="float:left">
+      <div style="padding-bottom: 5px 0; font-weight: bold; font-size: 13px;  text-align:left">
+        Contributions
+      </div>
+      <div style="font-size: 13px;  text-align:left">Amount</div>     
+    </div>
+
+    <div style="float:right; margin-left: 50px">
+      <div style="padding-bottom: 5px 0; font-weight: bold; font-size: 13px">
+        Amount
+      </div>
+      <div style="font-size: 13px">$${data.amount}</div>       
+    </div>
   </div>
   <hr size="2px" />
 
   <div style="position: relative">
-    <div
-      id="receipt-total"
+    <div      
       style="text-align: right; font-weight: bold; font-size: 13px"
-    >${data.amount}</div>
+    >Total: $${data.amount}</div>
   </div>
   <br />
   <div>
-    <div style="color: grey; font-size: 13px;  text-align:left">
-      <span style=" text-align:left>${type}</span>
-      <span
-        style=" text-align:left; font-size: 13px"
-        
-      >${transactionResponse.accountNumber}</span>
+    <div style=" font-size: 13px;  text-align:left">
+      <span style=" text-align:left; font-size: 13px"
+         
+      >Account Number: ${data.accountNumber}</span>
     </div>
     <div style="font-size: 13px; text-align:left">
-      Date/Time: <span >${today}</span>
-      <span >${formattedTime}</span>
+      <div style="font-size: 13px; text-align:left">Date: ${today}</div>      
+      <div style="font-size: 13px; text-align:left">Time: ${formattedTime}</div>
     </div>
     <div style="font-size: 13px; text-align:left">
-      Transaction ID : <span id="transactionID">${transactionResponse.transId}</span>
+      Transaction ID: ${transactionResponse.transId}
     </div>
-    <div style="font-size: 13px; text-align:left">Auth Code: <span id="authCode">${transactionResponse.authCode}</span></div>
+    <div style="font-size: 13px; text-align:left">Auth Code: ${transactionResponse.authCode}</div>
     <div style="font-size: 13px; text-align:left">
-      Payment Method : <span >${type}</span>
-      <span >${data.invoiceNumber}</span>
+      Payment Method: ${type}<br>
+      Invoice Number: ${data.invoiceNumber}</span>
     </div>
   </div>
-  
 </body>`, // html body
   })
 }
 
-emailRecipt(testData, "mobile", testResponse)
-  .then(res => {
-    console.log(res)
-  })
+// emailReciptMobile(testData, "mobile", testResponse)
+//   .then(res => {
+//     console.log(res)
+//   })
+// emailRecipt(testData, "mobile", testResponse)
+//   .then(res => {
+//     console.log(res)
+//   })
 
 function chargeCreditCard(data, callback) {
   // console.log("[Utility.js] chargeCreditCard()", apiID, transactionKey)
