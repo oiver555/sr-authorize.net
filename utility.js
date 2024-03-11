@@ -183,7 +183,7 @@ const emailReciptMobile = async (data, type, transactionResponse) => {
     subject: "VTH Writings Receipt", // Subject line
     text: `Since HTML has been disabled on your email client we have opted to send you a plain text version of our receipt.\nMay God Bless your Kindness!\n You may print this receipt page for your records.\n\n\n Receipt Information\nMerchant: GENERAL ASSOC. OF DAVIDIAN SEVENTH DAY ADVENTIST\nInvoice Number :${data.invoiceNumber}\nDate: ${today}\nTime: ${formattedTime}\nFirst Name: ${data.firstName}\nLast Name: ${data.lastName}\nCity: ${data.city}\nZip: ${data.zip}\nState: ${data.state}\nCountry: ${data.country}\nEmail: ${data.email}\nPhone: ${data.phone}\nTotal: ${data.amount}\nAccount Number: ${data.accountNumber}\nTransaction ID: ${transactionResponse.transId}\nTransaction Auth. Code: ${transactionResponse.authCode}\n`, // plain text body
     html: `         
-  <body style="margin: 25px 200px; padding: 10px; outline: solid 2px black">
+  <body style="padding: 10px; outline: solid 2px black">
   <h3 style="font-family: arial; margin: 0; padding: 0; text-align:left">
     May God Bless your Kindness!
   </h3>
