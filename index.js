@@ -1,6 +1,6 @@
 'use strict';
 const express = require('express')
-const { validateCreditCard, chargeCreditCard, debitBankAccount, chargeCreditCardMobile } = require('./utility')
+const { validateCreditCard, chargeCreditCard, debitBankAccount,debitBankAccountMobile, chargeCreditCardMobile, emailRecipt } = require('./utility')
 const app = express()
 const bodyParser = require('body-parser');
 const { getNameList } = require('country-list')
@@ -53,6 +53,20 @@ app.post('/charge/app/card', (req, res) => {
 });
 
 
+app.post('/charge/app/bank', (req, res) => {
+    debitBankAccountMobile()
+    debitBankAccount(req.body, function (result) {
+        console.log(result)
+        res.status(200).json({
+            status: 'success',
+            type: "Bank",
+            requestedAt: req.requestTime,
+            data: result
+        })
+    });
+
+});
+
 app.post('/charge/bank', (req, res) => {
     console.log(req.body)
     debitBankAccount(req.body, function (result) {
@@ -67,6 +81,7 @@ app.post('/charge/bank', (req, res) => {
 
 });
 
+
 app.get('/country/list', (req, res) => {
     console.log("Returning Country List")
     res.status(200).json({
@@ -77,6 +92,15 @@ app.get('/country/list', (req, res) => {
     })
 })
 
+app.get('/receipt', (req, res) => {
+    console.info('Sending Receipt', req.body)
+    emailRecipt()
+    res.status(200).json({
+        status: 'success',
+        requestedAt: req.requestTime,
+        data: {}
+    })
+})
 app.get('/', (req, res) => {
     console.info('Hello from the Server!')
 
