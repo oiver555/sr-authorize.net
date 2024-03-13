@@ -544,13 +544,13 @@ function chargeCreditCardMobile(data, callback) {
         else {
           console.log('Failed Transaction.');
           if (response.getTransactionResponse().getErrors() != null) {
-
+            console.log('Failed Transaction.', response.getTransactionResponse().getErrors());
           }
         }
       }
       else {
         console.log('Failed Transaction. ');
-
+        console.log('Failed Transaction. ')
       }
     }
     else {
@@ -827,8 +827,9 @@ function debitBankAccount(data, callback) {
         else {
           console.log('Failed Transaction.');
           if (response.getTransactionResponse().getErrors() != null) {
-            console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
-            console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
+            console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode()["resultCode"]);
+            console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode()["message"]);
+            console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText()['errors']['error']);
           }
         }
       }
