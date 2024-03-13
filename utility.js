@@ -89,7 +89,7 @@ const emailRecipt = async (data, type, transactionResponse) => {
     <div style="display: flex; justify-content: space-between">
       <div style="flex: 0.2; font-size: 13px;  text-align:left">Invoice Number:</div>
       <div id="receipt-invoice-nubmer" style="flex: 0.8; text-align:left; font-size: 13px">
-       Invoice Number: WEB-${data.invoiceKey}
+        WEB-${data.invoiceKey}
       </div>
     </div>
     <div >
@@ -418,7 +418,7 @@ function chargeCreditCard(data, callback) {
     if (response != null) {
       if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK) {
         if (response.getTransactionResponse().getMessages() != null) {
-          emailRecipt(data, "Credit Card", response)
+          emailRecipt(data, "Credit Card", response.transactionResponse)
           console.log(data, "Credit Card", response)
           // console.log('Successfully created transaction with Transaction ID: ' + response.getTransactionResponse().getTransId());
           // console.log('Response Code: ' + response.getTransactionResponse().getResponseCode());
