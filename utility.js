@@ -407,7 +407,7 @@ function chargeCreditCard(data, callback) {
 
   var ctrl = new APIControllers.CreateTransactionController(createRequest.getJSON());
   //Defaults to sandbox
-  // ctrl.setEnvironment(Constants.endpoint.production);
+  ctrl.setEnvironment(Constants.endpoint.production);
 
   ctrl.execute(function () {
 
@@ -529,7 +529,7 @@ function chargeCreditCardMobile(data, callback) {
 
   var ctrl = new APIControllers.CreateTransactionController(createRequest.getJSON());
   //Defaults to sandbox
-  // ctrl.setEnvironment(SDKConstants.endpoint.production);
+  ctrl.setEnvironment(Constants.endpoint.production);
 
   ctrl.execute(function () {
 
