@@ -419,7 +419,7 @@ function chargeCreditCard(data, callback) {
       if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK) {
         if (response.getTransactionResponse().getMessages() != null) {
           emailRecipt(data, "Credit Card", response.transactionResponse)
-          console.log(data, "Credit Card", response)
+          // console.log(data, "Credit Card", response)
           // console.log('Successfully created transaction with Transaction ID: ' + response.getTransactionResponse().getTransId());
           // console.log('Response Code: ' + response.getTransactionResponse().getResponseCode());
           // console.log('Message Code: ' + response.getTransactionResponse().getMessages().getMessage()[0].getCode());
