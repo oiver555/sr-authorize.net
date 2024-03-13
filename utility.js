@@ -837,12 +837,14 @@ function debitBankAccount(data, callback) {
         console.log('Failed Transaction. ');
         if (response.getTransactionResponse() != null && response.getTransactionResponse().getErrors() != null) {
 
-          console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
-          console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
+          console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode()["resultCode"]);
+          console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode()["message"]);
+          console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText()['errors']['error']);
         }
         else {
-          console.log('Error Code: ' + response.getMessages().getMessage()[0].getCode());
-          console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
+          console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode()["resultCode"]);
+          console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode()["message"]);
+          console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText()['errors']['error']);
         }
       }
     }
