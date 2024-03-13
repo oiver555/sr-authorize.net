@@ -551,7 +551,7 @@ function chargeCreditCardMobile(data, callback) {
         }
       }
       else {
-        // console.log('Failed Transaction. ');
+        console.log('Failed Transaction. ');
        }
     }
     else {
