@@ -433,7 +433,7 @@ function chargeCreditCard(data, callback) {
         }
       }
       else {
-        // console.log('Failed Transaction. ');
+        console.log('Failed Transaction. ');
         if (response.getTransactionResponse() != null && response.getTransactionResponse().getErrors() != null) {
 
           // console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
