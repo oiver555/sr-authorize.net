@@ -28,7 +28,7 @@ app.post('/charge/card', (req, res) => {
     } else {
         console.log("Validation Complete, Processing Card Now!")
         chargeCreditCard(req.body, function (result) {
-            console.log(result)
+            console.log(result, result.message)
             res.status(200).json({
                 status: 'success',
                 type: "Card",
