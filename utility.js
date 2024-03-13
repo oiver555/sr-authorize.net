@@ -62,7 +62,7 @@ const emailRecipt = async (data, type, transactionResponse) => {
     from: 'admin@shepherds-rod-message.org', // sender address
     to: data.email, // list of receivers
     subject: "Shepherd's Rod Tithe Receipt", // Subject line
-    text: `Since HTML has been disabled on your email client we have opted to send you a plain text version of our receipt. \nMay God Bless your Faithfulness!\n You may print this receipt page for your records.\n\n\n Receipt Information\nMerchant: GENERAL ASSOC. OF DAVIDIAN SEVENTH DAY ADVENTIST\nInvoice Number :${data.invoiceNumber}\nDate: ${today}\nTime: ${formattedTime} EST\nFirst Name: ${data.firstName}\nLast Name: ${data.lastName}\nCity: ${data.city}\nZip: ${data.zip}\nState: ${data.state}\nCountry: ${data.country}\nEmail: ${data.email}\nPhone: ${data.phone}\n1st Tithe: ${data.tithe1}\n2nd Tithe: ${data.tithe2}\nOffering: ${data.offering}\nBldg.: ${data.bldg}\nTotal: ${data.total}\nAccount Number: ${data.accountNumber}\nTransaction ID: ${transactionResponse.transId}\nTransaction Auth. Code: ${transactionResponse.authCode}\n`, // plain text body
+    text: `Since HTML has been disabled on your email client we have opted to send you a plain text version of our receipt. \nMay God Bless your Faithfulness!\n You may print this receipt page for your records.\n\n\n Receipt Information\nMerchant: GENERAL ASSOC. OF DAVIDIAN SEVENTH DAY ADVENTIST\nInvoice Number: WEB-${data.invoiceKey}\nDate: ${today}\nTime: ${formattedTime} EST\nFirst Name: ${data.firstName}\nLast Name: ${data.lastName}\nCity: ${data.city}\nZip: ${data.zip}\nState: ${data.state}\nCountry: ${data.country}\nEmail: ${data.email}\nPhone: ${data.phone}\n1st Tithe: ${data.tithe1}\n2nd Tithe: ${data.tithe2}\nOffering: ${data.offering}\nBldg.: ${data.bldg}\nTotal: ${data.total}\nAccount Number: ${transactionResponse.accountNumber}\nTransaction ID: ${transactionResponse.transId}\nTransaction Auth. Code: ${transactionResponse.authCode}\n`, // plain text body
     html: `         
   <body style="margin: 25px; padding: 10px; outline: solid 2px black; color: black">
   <h3 style="font-family: arial; margin: 0; padding: 0; text-align:left">
@@ -89,7 +89,7 @@ const emailRecipt = async (data, type, transactionResponse) => {
     <div style="display: flex; justify-content: space-between">
       <div style="flex: 0.2; font-size: 13px;  text-align:left">Invoice Number:</div>
       <div id="receipt-invoice-nubmer" style="flex: 0.8; text-align:left; font-size: 13px">
-        INV-${data.invoiceNumber}
+       Invoice Number: WEB-${data.invoiceKey}
       </div>
     </div>
     <div >
@@ -147,7 +147,7 @@ const emailRecipt = async (data, type, transactionResponse) => {
     <div style=" font-size: 13px;  text-align:left">
       <span style=" text-align:left; font-size: 13px"
          
-      >Account Number: ${data.accountNumber}</span>
+      >Account Number: ${transactionResponse.accountNumber}</span>
     </div>
     <div style="font-size: 13px; text-align:left">
       <div style="font-size: 13px; text-align:left">Date: ${today}</div>      
@@ -159,7 +159,7 @@ const emailRecipt = async (data, type, transactionResponse) => {
     <div style="font-size: 13px; text-align:left">Auth Code: ${transactionResponse.authCode}</div>
     <div style="font-size: 13px; text-align:left">
       Payment Method: ${type}<br>
-      Invoice Number: ${data.invoiceNumber}</span>
+      Invoice Number: WEB-${data.invoiceKey}</span>
     </div>
   </div>
 </body>`, // html body
