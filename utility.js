@@ -528,7 +528,7 @@ function chargeCreditCardMobile(data, callback) {
 
   var ctrl = new APIControllers.CreateTransactionController(createRequest.getJSON());
   //Defaults to sandbox
-  ctrl.setEnvironment(SDKConstants.endpoint.production);
+  // ctrl.setEnvironment(SDKConstants.endpoint.production);
 
   ctrl.execute(function () {
 
