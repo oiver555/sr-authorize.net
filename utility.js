@@ -37,6 +37,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const emailRecipt = async (data, type, transactionResponse) => {
+  console.log("[Utility.js] emailRecipt()")
 
   let today = new Date();
   const dd = String(today.getDate()).padStart(2, '0');
@@ -57,7 +58,6 @@ const emailRecipt = async (data, type, transactionResponse) => {
   // Convert Date object to a readable string in EST time zone
   const formattedTime = new Date(time).toLocaleString('en-US', options);
 
-  console.log(formattedTime)
   return transporter.sendMail({
     from: 'admin@shepherds-rod-message.org', // sender address
     to: data.email, // list of receivers
@@ -169,7 +169,7 @@ const emailRecipt = async (data, type, transactionResponse) => {
 
 }
 const emailReciptMobile = async (data, type, transactionResponse) => {
-
+  console.log("[Utility.js] emailReciptMobile()")
   let today = new Date();
   const dd = String(today.getDate()).padStart(2, '0');
   const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
@@ -304,7 +304,7 @@ const emailReciptMobile = async (data, type, transactionResponse) => {
 //   })
 
 function chargeCreditCard(data, callback) {
-  // console.log("[Utility.js] chargeCreditCard()", apiID, transactionKey)
+  console.log("[Utility.js] chargeCreditCard()")
   var merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
   merchantAuthenticationType.setName(apiID);
   merchantAuthenticationType.setTransactionKey(transactionKey);
@@ -425,7 +425,7 @@ function chargeCreditCard(data, callback) {
           // console.log('Description: ' + response.getTransactionResponse().getMessages().getMessage()[0].getDescription());
         }
         else {
-          console.log('Failed Transaction.');
+          console.log('Failed Transaction. ChargeCreditCard()');
           if (response.getTransactionResponse().getErrors() != null) {
             // console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
             // console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
@@ -542,16 +542,17 @@ function chargeCreditCardMobile(data, callback) {
           emailReciptMobile(data, "Credit Card", response)
         }
         else {
-          console.log('Failed Transaction.');
+          console.log('Failed Transaction. chargeCreditCardMobile');
           if (response.getTransactionResponse().getErrors() != null) {
             console.log('Failed Transaction.', response.getTransactionResponse().getErrors());
+            console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode()["resultCode"]);
+            console.log('Error Message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode()["message"]);
           }
         }
       }
       else {
         console.log('Failed Transaction. ');
-        console.log('Failed Transaction. ')
-      }
+       }
     }
     else {
       console.log('Null Response.');
@@ -724,6 +725,7 @@ const validateBankAccount = (req) => {
 }
 
 function debitBankAccount(data, callback) {
+  console.log("[Utility.js] debitBankAccount()")
 
   var merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
   merchantAuthenticationType.setName(apiID);
@@ -828,7 +830,7 @@ function debitBankAccount(data, callback) {
           console.log('Failed Transaction.');
           if (response.getTransactionResponse().getErrors() != null) {
             console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode()["resultCode"]);
-            console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode()["message"]);
+            console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode()["message"]);
             console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText()['errors']['error']);
           }
         }
@@ -857,6 +859,7 @@ function debitBankAccount(data, callback) {
 }
 
 function debitBankAccountMobile(data, callback) {
+  console.log("[Utility.js] debitBankAccountMobile()")
 
   var merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
   merchantAuthenticationType.setName(apiID);
