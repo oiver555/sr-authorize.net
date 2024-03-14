@@ -319,7 +319,7 @@ function chargeCreditCard(data, callback) {
   paymentType.setCreditCard(creditCard);
 
   var orderDetails = new APIContracts.OrderType();
-  orderDetails.setInvoiceNumber(`${data.invoiceNumber}`);
+  orderDetails.setInvoiceNumber(`WEB-${data.invoiceKey}`);
   orderDetails.setDescription('Tithe & Offering');
 
   var billTo = new APIContracts.CustomerAddressType();
@@ -557,7 +557,6 @@ function chargeCreditCardMobile(data, callback) {
     else {
       console.log('Null Response.');
     }
-
     callback(response);
   });
 }
@@ -743,7 +742,7 @@ function debitBankAccount(data, callback) {
   paymentType.setBankAccount(bankAccountType);
 
   var orderDetails = new APIContracts.OrderType();
-  orderDetails.setInvoiceNumber(data.invoiceNumber);
+  orderDetails.setInvoiceNumber(`WEB-${data.invoiceKey}`);
   orderDetails.setDescription('Tithes & Offerings');
 
 
@@ -800,7 +799,7 @@ function debitBankAccount(data, callback) {
   transactionRequestType.setBillTo(billTo);
 
   var createRequest = new APIContracts.CreateTransactionRequest();
-  createRequest.setRefId(data.invoiceNumber);
+  createRequest.setRefId(`WEB-${data.invoiceKey}`);
   createRequest.setMerchantAuthentication(merchantAuthenticationType);
   createRequest.setTransactionRequest(transactionRequestType);
 
