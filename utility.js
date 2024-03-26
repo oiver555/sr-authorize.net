@@ -393,7 +393,7 @@ function chargeCreditCard(data, callback) {
   console.log(lineItem_id2.unitPrice)
   console.log(lineItem_id3.unitPrice)
   console.log(lineItem_id4.unitPrice)
-  transactionRequestType.setAmount(JSON.parse(lineItem_id1.unitPrice) + JSON.parse(lineItem_id2.unitPrice) + JSON.parse(lineItem_id3.unitPrice) + JSON.parse(lineItem_id4.unitPrice));
+  transactionRequestType.setAmount(parseFloat(lineItem_id1.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id2.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id3.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id4.unitPrice.replace(/,/g, "")));
   transactionRequestType.setLineItems(lineItems);
   transactionRequestType.setOrder(orderDetails);
   !data.anonymous && transactionRequestType.setBillTo(billTo);
