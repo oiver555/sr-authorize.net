@@ -307,7 +307,7 @@ function chargeCreditCard(data, callback) {
   console.log("[Utility.js] chargeCreditCard()")
   var merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
   merchantAuthenticationType.setName(apiID);
-  merchantAuthenticationType.setTransactionKey(transactionKey); 
+  merchantAuthenticationType.setTransactionKey(transactionKey);
 
 
   var creditCard = new APIContracts.CreditCardType();
@@ -389,7 +389,10 @@ function chargeCreditCard(data, callback) {
   var transactionRequestType = new APIContracts.TransactionRequestType();
   transactionRequestType.setTransactionType(APIContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
   transactionRequestType.setPayment(paymentType);
-
+  console.log(lineItem_id1.unitPrice)
+  console.log(lineItem_id2.unitPrice)
+  console.log(lineItem_id3.unitPrice)
+  console.log(lineItem_id4.unitPrice)
   transactionRequestType.setAmount(JSON.parse(lineItem_id1.unitPrice) + JSON.parse(lineItem_id2.unitPrice) + JSON.parse(lineItem_id3.unitPrice) + JSON.parse(lineItem_id4.unitPrice));
   transactionRequestType.setLineItems(lineItems);
   transactionRequestType.setOrder(orderDetails);
@@ -399,7 +402,7 @@ function chargeCreditCard(data, callback) {
   var createRequest = new APIContracts.CreateTransactionRequest();
   createRequest.setMerchantAuthentication(merchantAuthenticationType);
   createRequest.setTransactionRequest(transactionRequestType);
- 
+
   var ctrl = new APIControllers.CreateTransactionController(createRequest.getJSON());
   //Defaults to sandbox
   ctrl.setEnvironment(Constants.endpoint.production);
@@ -539,7 +542,7 @@ function chargeCreditCardMobile(data, callback) {
           console.log('Response Code: ' + response.getTransactionResponse().getResponseCode());
           console.log('Message Code: ' + response.getTransactionResponse().getMessages().getMessage()[0].getCode());
           console.log('Description: ' + response.getTransactionResponse().getMessages().getMessage()[0].getDescription());
-    
+
         }
         else {
           console.log('Failed Transaction. chargeCreditCardMobile');
@@ -552,7 +555,7 @@ function chargeCreditCardMobile(data, callback) {
       }
       else {
         console.log('Failed Transaction. ', response.getTransactionResponse().getErrors());
-       }
+      }
     }
     else {
       console.log('Null Response.');
