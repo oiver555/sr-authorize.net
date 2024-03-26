@@ -336,26 +336,26 @@ function chargeCreditCard(data, callback) {
   lineItem_id1.setItemId('1');
   lineItem_id1.setName('1st Tithe');
   lineItem_id1.setQuantity('1');
-  lineItem_id1.setUnitPrice(data.tithe1);
+  lineItem_id1.setUnitPrice(data.tithe1.replace(/,/g, ""));
 
   var lineItem_id2 = new APIContracts.LineItemType();
   lineItem_id2.setItemId('2');
   lineItem_id2.setName('2nd Tithe');
   lineItem_id2.setQuantity('1');
-  lineItem_id2.setUnitPrice(data.tithe2);
+  lineItem_id2.setUnitPrice(data.tithe2.replace(/,/g, ""));
 
   var lineItem_id3 = new APIContracts.LineItemType();
   lineItem_id3.setItemId('3');
   lineItem_id3.setName('Offering');
   lineItem_id3.setQuantity('1');
-  lineItem_id3.setUnitPrice(data.offering);
+  lineItem_id3.setUnitPrice(data.offering.replace(/,/g, ""));
 
   var lineItem_id4 = new APIContracts.LineItemType();
   lineItem_id4.setItemId('4');
   lineItem_id4.setName('Bldg. Fund');
   lineItem_id3.setDescription('For the upkeep of the buidlings at Mt. Carmel');
   lineItem_id4.setQuantity('1');
-  lineItem_id4.setUnitPrice(data.bldg)
+  lineItem_id4.setUnitPrice(data.bldg.replace(/,/g, ""))
 
   var lineItemList = [];
   lineItemList.push(lineItem_id1);
