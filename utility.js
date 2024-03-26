@@ -609,14 +609,14 @@ const validateCreditCard = (req) => {
     });
   }
 
-  if (!validator.isDecimal(tithe1)) {
+  if (!validator.isCurrency(tithe1)) {
     errors.push({
       param: 'tithe1',
       value: tithe1,
       msg: 'Invalid 1st Tithe'
     });
   }
-  if (!validator.isDecimal(tithe2)) {
+  if (!validator.isCurrency(tithe2)) {
     errors.push({
       param: 'tithe2',
       value: tithe2,
