@@ -605,11 +605,11 @@ const validateCreditCard = (req) => {
 
 
   if (!validator.isPostalCode(zip, 'any')) {
-    errors.push({
-      param: 'zip',
-      value: zip,
-      msg: 'Invalid Zip Code'
-    });
+    // errors.push({
+    //   param: 'zip',
+    //   value: zip,
+    //   msg: 'Invalid Zip Code'
+    // });
   }
 
   if (!validator.isCurrency(tithe1)) {
