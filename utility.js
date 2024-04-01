@@ -353,15 +353,23 @@ function chargeCreditCard(data, callback) {
   var lineItem_id4 = new APIContracts.LineItemType();
   lineItem_id4.setItemId('4');
   lineItem_id4.setName('Bldg. Fund');
-  lineItem_id3.setDescription('For the upkeep of the buidlings at Mt. Carmel');
+  lineItem_id4.setDescription('For the upkeep of the buidlings at Mt. Carmel');
   lineItem_id4.setQuantity('1');
   lineItem_id4.setUnitPrice(data.bldg.replace(/,/g, ""))
+
+  var lineItem_id5 = new APIContracts.LineItemType();
+  lineItem_id5.setItemId('5');
+  lineItem_id5.setName('Other');
+  lineItem_id5.setDescription('Additional Contributions');
+  lineItem_id5.setQuantity('1');
+  lineItem_id5.setUnitPrice(data.other.replace(/,/g, ""))
 
   var lineItemList = [];
   lineItemList.push(lineItem_id1);
   lineItemList.push(lineItem_id2);
   lineItemList.push(lineItem_id3);
   lineItemList.push(lineItem_id4);
+  lineItemList.push(lineItem_id5);
 
   var lineItems = new APIContracts.ArrayOfLineItem();
   lineItems.setLineItem(lineItemList);
@@ -393,7 +401,8 @@ function chargeCreditCard(data, callback) {
   console.log(lineItem_id2.unitPrice)
   console.log(lineItem_id3.unitPrice)
   console.log(lineItem_id4.unitPrice)
-  transactionRequestType.setAmount(parseFloat(lineItem_id1.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id2.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id3.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id4.unitPrice.replace(/,/g, "")));
+  console.log(lineItem_id5.unitPrice)
+  transactionRequestType.setAmount(parseFloat(lineItem_id1.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id2.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id3.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id4.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id5.unitPrice.replace(/,/g, "")));
   transactionRequestType.setLineItems(lineItems);
   transactionRequestType.setOrder(orderDetails);
   !data.anonymous && transactionRequestType.setBillTo(billTo);
@@ -409,8 +418,7 @@ function chargeCreditCard(data, callback) {
 
   ctrl.execute(function () {
 
-    var apiResponse = ctrl.getResponse();
-
+    var apiResponse = ctrl.getResponse(); 
     var response = new APIContracts.CreateTransactionResponse(apiResponse);
 
     if (response != null) {
