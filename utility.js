@@ -357,19 +357,19 @@ function chargeCreditCard(data, callback) {
   lineItem_id4.setQuantity('1');
   lineItem_id4.setUnitPrice(data.bldg.replace(/,/g, ""))
 
-  var lineItem_id5 = new APIContracts.LineItemType();
-  lineItem_id5.setItemId('5');
-  lineItem_id5.setName('Other');
-  lineItem_id5.setDescription('Additional Contributions');
-  lineItem_id5.setQuantity('1');
-  lineItem_id5.setUnitPrice(data.other.replace(/,/g, ""))
+  // var lineItem_id5 = new APIContracts.LineItemType();
+  // lineItem_id5.setItemId('5');
+  // lineItem_id5.setName('Other');
+  // lineItem_id5.setDescription('Additional Contributions');
+  // lineItem_id5.setQuantity('1');
+  // lineItem_id5.setUnitPrice(data.other.replace(/,/g, ""))
 
   var lineItemList = [];
   lineItemList.push(lineItem_id1);
   lineItemList.push(lineItem_id2);
   lineItemList.push(lineItem_id3);
   lineItemList.push(lineItem_id4);
-  lineItemList.push(lineItem_id5);
+  // lineItemList.push(lineItem_id5);
 
   var lineItems = new APIContracts.ArrayOfLineItem();
   lineItems.setLineItem(lineItemList);
@@ -401,8 +401,8 @@ function chargeCreditCard(data, callback) {
   console.log(lineItem_id2.unitPrice)
   console.log(lineItem_id3.unitPrice)
   console.log(lineItem_id4.unitPrice)
-  console.log(lineItem_id5.unitPrice)
-  transactionRequestType.setAmount(parseFloat(lineItem_id1.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id2.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id3.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id4.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id5.unitPrice.replace(/,/g, "")));
+  // console.log(lineItem_id5.unitPrice)
+  transactionRequestType.setAmount(parseFloat(lineItem_id1.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id2.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id3.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id4.unitPrice.replace(/,/g, "")));
   transactionRequestType.setLineItems(lineItems);
   transactionRequestType.setOrder(orderDetails);
   !data.anonymous && transactionRequestType.setBillTo(billTo);
