@@ -336,18 +336,22 @@ function chargeCreditCard(data, callback) {
   lineItem_id1.setItemId('1');
   lineItem_id1.setName('1st Tithe');
   lineItem_id1.setQuantity('1');
+
+  console.log("data.tithe1", data.tithe1)
   lineItem_id1.setUnitPrice(data.tithe1.replace(/,/g, ""));
 
   var lineItem_id2 = new APIContracts.LineItemType();
   lineItem_id2.setItemId('2');
   lineItem_id2.setName('2nd Tithe');
   lineItem_id2.setQuantity('1');
+  console.log("data.tithe2", data.tithe2)
   lineItem_id2.setUnitPrice(data.tithe2.replace(/,/g, ""));
 
   var lineItem_id3 = new APIContracts.LineItemType();
   lineItem_id3.setItemId('3');
   lineItem_id3.setName('Offering');
   lineItem_id3.setQuantity('1');
+  console.log("data.offering", data.offering)
   lineItem_id3.setUnitPrice(data.offering.replace(/,/g, ""));
 
   var lineItem_id4 = new APIContracts.LineItemType();
@@ -355,21 +359,26 @@ function chargeCreditCard(data, callback) {
   lineItem_id4.setName('Bldg. Fund');
   lineItem_id4.setDescription('For the upkeep of the buidlings at Mt. Carmel');
   lineItem_id4.setQuantity('1');
+  console.log("data.bldg", data.bldg)
   lineItem_id4.setUnitPrice(data.bldg.replace(/,/g, ""))
 
-  var lineItem_id5 = new APIContracts.LineItemType();
-  lineItem_id5.setItemId('5');
-  lineItem_id5.setName('Other');
-  lineItem_id5.setDescription('Additional Contributions that do not fall under any category.');
-  lineItem_id5.setQuantity('1');
-  lineItem_id5.setUnitPrice(data.other.replace(/,/g, ""))
-
+  if (data.other) {
+    console.log("data.other", data.other)
+    var lineItem_id5 = new APIContracts.LineItemType();
+    lineItem_id5.setItemId('5');
+    lineItem_id5.setName('Other');
+    lineItem_id5.setDescription('Additional Contributions that do not fall under any category.');
+    lineItem_id5.setQuantity('1');
+    lineItem_id5.setUnitPrice(data.other.replace(/,/g, ""))
+  }
   var lineItemList = [];
   lineItemList.push(lineItem_id1);
   lineItemList.push(lineItem_id2);
   lineItemList.push(lineItem_id3);
   lineItemList.push(lineItem_id4);
-  // lineItemList.push(lineItem_id5);
+  if (data.other) {
+    lineItemList.push(lineItem_id5);
+  }
 
   var lineItems = new APIContracts.ArrayOfLineItem();
   lineItems.setLineItem(lineItemList);
@@ -401,8 +410,13 @@ function chargeCreditCard(data, callback) {
   console.log(lineItem_id2.unitPrice)
   console.log(lineItem_id3.unitPrice)
   console.log(lineItem_id4.unitPrice)
-  console.log(lineItem_id5.unitPrice)
-  transactionRequestType.setAmount(parseFloat(lineItem_id1.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id2.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id3.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id4.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id5.unitPrice.replace(/,/g, "")));
+  if (lineItem_id5) {
+    console.log(lineItem_id5.unitPrice)
+    transactionRequestType.setAmount(parseFloat(lineItem_id1.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id2.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id3.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id4.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id5.unitPrice.replace(/,/g, "")));
+  } else {
+     transactionRequestType.setAmount(parseFloat(lineItem_id1.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id2.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id3.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id4.unitPrice.replace(/,/g, "")));
+  }
+
   transactionRequestType.setLineItems(lineItems);
   transactionRequestType.setOrder(orderDetails);
   !data.anonymous && transactionRequestType.setBillTo(billTo);
@@ -418,7 +432,7 @@ function chargeCreditCard(data, callback) {
 
   ctrl.execute(function () {
 
-    var apiResponse = ctrl.getResponse(); 
+    var apiResponse = ctrl.getResponse();
     var response = new APIContracts.CreateTransactionResponse(apiResponse);
 
     if (response != null) {
@@ -610,8 +624,6 @@ const validateCreditCard = (req) => {
     });
   }
 
-
-
   if (!validator.isPostalCode(zip, 'any')) {
     // errors.push({
     //   param: 'zip',
@@ -621,33 +633,33 @@ const validateCreditCard = (req) => {
   }
 
   if (!validator.isCurrency(tithe1)) {
-    errors.push({
-      param: 'tithe1',
-      value: tithe1,
-      msg: 'Invalid 1st Tithe'
-    });
+    // errors.push({
+    //   param: 'tithe1',
+    //   value: tithe1,
+    //   msg: 'Invalid 1st Tithe'
+    // });
   }
   if (!validator.isCurrency(tithe2)) {
-    errors.push({
-      param: 'tithe2',
-      value: tithe2,
-      msg: 'Invalid 2nd Tithe'
-    });
+    // errors.push({
+    //   param: 'tithe2',
+    //   value: tithe2,
+    //   msg: 'Invalid 2nd Tithe'
+    // });
   }
   if (!validator.isDecimal(offering)) {
-    errors.push({
-      param: 'offering',
-      value: offering,
-      msg: 'Invalid Offering'
-    });
+    // errors.push({
+    //   param: 'offering',
+    //   value: offering,
+    //   msg: 'Invalid Offering'
+    // });
   }
   if (!validator.isDecimal(bldg)) {
-    console.log(bldg)
-    errors.push({
-      param: 'bldg',
-      value: bldg,
-      msg: 'Invalid Bldg. Amount'
-    });
+    // console.log(bldg)
+    // errors.push({
+    //   param: 'bldg',
+    //   value: bldg,
+    //   msg: 'Invalid Bldg. Amount'
+    // });
   }
 
   return errors;
