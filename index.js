@@ -1,6 +1,6 @@
 'use strict';
 const express = require('express')
-const { validateCreditCard, chargeCreditCard, debitBankAccount,debitBankAccountMobile, chargeCreditCardMobile, emailRecipt } = require('./utility')
+const { validateCreditCard, chargeCreditCard, debitBankAccount, debitBankAccountMobile, chargeCreditCardMobile, emailRecipt } = require('./utility')
 const app = express()
 const bodyParser = require('body-parser');
 const { getNameList } = require('country-list')
@@ -21,20 +21,29 @@ app.post('/charge/card', (req, res) => {
             type: "Card",
             requestedAt: req.requestTime,
             errors: validationErrors,
-            message: "hey there",
+            message: "Validation Error",
             data: validationErrors
         });
         return;
     } else {
-        console.log("Validation Complete, Processing Card Now!")
-        chargeCreditCard(req.body, function (result) {
-            console.log(result, result.messages.message)
-            res.status(200).json({
-                status: 'success',
-                type: "Card",
-                requestedAt: req.requestTime,
-                data: result
-            })
+        chargeCreditCard(req.body, function (result, data) {
+            if (result["transactionResponse"]["errors"] === undefined) {
+                console.log("Transaction Complete!")
+                emailRecipt(req.body, "Credit Card", result.transactionResponse)
+                res.status(200).json({
+                    status: 'success',
+                    type: "Card",
+                    requestedAt: req.requestTime,
+                    data: result
+                })
+            } else {
+                console.log("There was an error", result.messages.message,)
+                res.status(500).json({
+                    status: 'error',
+                    type: "Card",
+                    message: result.messages.message,
+                });
+            }
         });
     }
 });
@@ -115,5 +124,5 @@ app.get('/', (req, res) => {
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+    // console.log(`Server is running on port ${port}`);
 });

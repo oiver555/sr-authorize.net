@@ -4,29 +4,9 @@ const validator = require('validator');
 const nodemailer = require('nodemailer')
 const apiID = process.env.apiID;
 const transactionKey = process.env.transactionKey;
-const testData = {
-  invoiceNumber: 555,
-  firstName: "Oliver",
-  lastName: "Saintilien",
-  city: "Mountain Dale",
-  zip: 12763,
-  state: "New York",
-  country: "USA",
-  email: "glenroy_matthews@yahoo.com",
-  phone: "9736668136",
-  tithe1: 50,
-  tithe2: 50,
-  amount: 100,
-  offering: 5,
-  bldg: 5,
-  total: 200,
-  invoiceNumber: 555,
-  accountNumber: 123456789
-}
-const testResponse = {
-  transId: 12345,
-  authCode: 554478
-}
+// const apiID = "88DUc2uz";
+// const transactionKey = "88P857rJKh2NcX5C";
+
 const transporter = nodemailer.createTransport({
   host: 'shepherds-rod-message.org',
   port: 465,
@@ -37,8 +17,9 @@ const transporter = nodemailer.createTransport({
 });
 
 const emailRecipt = async (data, type, transactionResponse) => {
-  console.log("[Utility.js] emailRecipt()")
+  console.log("[Utility.js] emailRecipt()", data)
 
+  const total = parseInt(data.tithe1) + parseInt(data.tithe2) + parseInt(data.offering) + parseInt(data.bldg) + parseInt(data.other)
   let today = new Date();
   const dd = String(today.getDate()).padStart(2, '0');
   const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
@@ -62,7 +43,7 @@ const emailRecipt = async (data, type, transactionResponse) => {
     from: 'admin@shepherds-rod-message.org', // sender address
     to: data.email, // list of receivers
     subject: "Shepherd's Rod Tithe Receipt", // Subject line
-    text: `Since HTML has been disabled on your email client we have opted to send you a plain text version of our receipt. \nMay God Bless your Faithfulness!\n You may print this receipt page for your records.\n\n\n Receipt Information\nMerchant: GENERAL ASSOC. OF DAVIDIAN SEVENTH DAY ADVENTIST\nInvoice Number: WEB-${data.invoiceKey}\nDate: ${today}\nTime: ${formattedTime} EST\nFirst Name: ${data.firstName}\nLast Name: ${data.lastName}\nCity: ${data.city}\nZip: ${data.zip}\nState: ${data.state}\nCountry: ${data.country}\nEmail: ${data.email}\nPhone: ${data.phone}\n1st Tithe: ${data.tithe1}\n2nd Tithe: ${data.tithe2}\nOffering: ${data.offering}\nBldg.: ${data.bldg}\nTotal: ${data.total}\nAccount Number: ${transactionResponse.accountNumber}\nTransaction ID: ${transactionResponse.transId}\nTransaction Auth. Code: ${transactionResponse.authCode}\n`, // plain text body
+    text: `Since HTML has been disabled on your email client we have opted to send you a plain text version of our receipt. \nMay God Bless your Faithfulness!\n You may print this receipt page for your records.\n\n\n Receipt Information\nMerchant: GENERAL ASSOC. OF DAVIDIAN SEVENTH DAY ADVENTIST\nInvoice Number: WEB-${data.invoiceKey}\nDate: ${today}\nTime: ${formattedTime} EST\nFirst Name: ${data.firstName}\nLast Name: ${data.lastName}\nCity: ${data.city}\nZip: ${data.zip}\nState: ${data.state}\nCountry: ${data.country}\nEmail: ${data.email}\nPhone: ${data.phone}\n1st Tithe: ${data.tithe1}\n2nd Tithe: ${data.tithe2}\nOffering: ${data.offering}\nBldg.: ${data.bldg}\nTotal: ${total}\nAccount Number: ${transactionResponse.accountNumber}\nTransaction ID: ${transactionResponse.transId}\nTransaction Auth. Code: ${transactionResponse.authCode}\n`, // plain text body
     html: `         
   <body style="margin: 25px; padding: 10px; outline: solid 2px black; color: black">
   <h3 style="font-family: arial; margin: 0; padding: 0; text-align:left">
@@ -140,7 +121,7 @@ const emailRecipt = async (data, type, transactionResponse) => {
   <div style="position: relative">
     <div      
       style="text-align: right; font-weight: bold; font-size: 13px"
-    >Total: $${data.total}</div>
+    >Total: $${total}</div>
   </div>
   <br />
   <div>
@@ -362,23 +343,21 @@ function chargeCreditCard(data, callback) {
   console.log("data.bldg", data.bldg)
   lineItem_id4.setUnitPrice(data.bldg.replace(/,/g, ""))
 
-  if (data.other) {
-    console.log("data.other", data.other)
-    var lineItem_id5 = new APIContracts.LineItemType();
-    lineItem_id5.setItemId('5');
-    lineItem_id5.setName('Other');
-    lineItem_id5.setDescription('Additional Contributions that do not fall under any category.');
-    lineItem_id5.setQuantity('1');
-    lineItem_id5.setUnitPrice(data.other.replace(/,/g, ""))
-  }
+
+  var lineItem_id5 = new APIContracts.LineItemType();
+  lineItem_id5.setItemId('5');
+  lineItem_id5.setName('Other');
+  lineItem_id5.setDescription('Additional Contributions that do not fall under any category.');
+  lineItem_id5.setQuantity('1');
+  lineItem_id5.setUnitPrice(data.other.replace(/,/g, ""))
+
   var lineItemList = [];
   lineItemList.push(lineItem_id1);
   lineItemList.push(lineItem_id2);
   lineItemList.push(lineItem_id3);
   lineItemList.push(lineItem_id4);
-  if (data.other) {
-    lineItemList.push(lineItem_id5);
-  }
+  lineItemList.push(lineItem_id5);
+
 
   var lineItems = new APIContracts.ArrayOfLineItem();
   lineItems.setLineItem(lineItemList);
@@ -406,16 +385,12 @@ function chargeCreditCard(data, callback) {
   var transactionRequestType = new APIContracts.TransactionRequestType();
   transactionRequestType.setTransactionType(APIContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
   transactionRequestType.setPayment(paymentType);
-  console.log(lineItem_id1.unitPrice)
-  console.log(lineItem_id2.unitPrice)
-  console.log(lineItem_id3.unitPrice)
-  console.log(lineItem_id4.unitPrice)
-  if (lineItem_id5) {
-    console.log(lineItem_id5.unitPrice)
-    transactionRequestType.setAmount(parseFloat(lineItem_id1.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id2.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id3.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id4.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id5.unitPrice.replace(/,/g, "")));
-  } else {
-     transactionRequestType.setAmount(parseFloat(lineItem_id1.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id2.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id3.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id4.unitPrice.replace(/,/g, "")));
-  }
+  // console.log(lineItem_id1.unitPrice)
+  // console.log(lineItem_id2.unitPrice)
+  // console.log(lineItem_id3.unitPrice)
+  // console.log(lineItem_id4.unitPrice)
+  console.log((parseFloat(lineItem_id1.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id2.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id3.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id4.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id5.unitPrice.replace(/,/g, ""))).toFixed(2))
+  transactionRequestType.setAmount((parseFloat(lineItem_id1.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id2.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id3.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id4.unitPrice.replace(/,/g, "")) + parseFloat(lineItem_id5.unitPrice.replace(/,/g, ""))).toFixed(2))
 
   transactionRequestType.setLineItems(lineItems);
   transactionRequestType.setOrder(orderDetails);
@@ -438,7 +413,7 @@ function chargeCreditCard(data, callback) {
     if (response != null) {
       if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK) {
         if (response.getTransactionResponse().getMessages() != null) {
-          emailRecipt(data, "Credit Card", response.transactionResponse)
+          console.log(data, "Credit Card", response.transactionResponse)
           console.log("transactionRequestType", transactionRequestType)
           console.log("merchantAuthenticationType", merchantAuthenticationType)
           console.log('Successfully created transaction with Transaction ID: ' + response.getTransactionResponse().getTransId());
@@ -455,9 +430,11 @@ function chargeCreditCard(data, callback) {
         }
       }
       else {
-        console.log('Failed Transaction. xfgddd', response.messages.message, data);
+        console.log('Failed Transaction.');
+        console.log("response.messages.message = ", response.messages.message);
+        console.log("data = ", data);
         if (response.getTransactionResponse() != null && response.getTransactionResponse().getErrors() != null) {
-
+          console.log("response.getTransactionResponse()")
           console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
           console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
         }
@@ -470,7 +447,7 @@ function chargeCreditCard(data, callback) {
     else {
       console.log('Null Response.');
     }
-    callback(response);
+    callback(response, data);
   });
 }
 
